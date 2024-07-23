@@ -49,12 +49,21 @@ const D20 = ({ position, color }) => {
     ];
   }, []);
 
+  const resetAngularVelocity = useCallback(() => {
+    return [
+      Math.random() * 20 - 10,
+      Math.random() * 20 - 10,
+      Math.random() * 20 - 10,
+    ];
+  }, []);
+
   const resetRoll = useCallback(() => {
     setHover(false);
     setLowVelocity(false);
     api.position.set(...position);
     api.rotation.set(...resetRotation());
-  }, [api, resetRotation]);
+    api.angularVelocity.set(...resetAngularVelocity());
+  }, [api, resetRotation, resetAngularVelocity]);
 
   const onRest = useCallback(() => {
     setAtRest(true);
