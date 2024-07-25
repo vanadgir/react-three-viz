@@ -1,6 +1,8 @@
 import { useConvexPolyhedron } from "@react-three/cannon";
+import { useFrame } from "@react-three/fiber";
+import { Text } from "@react-three/drei";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Color, IcosahedronGeometry } from "three";
+import { IcosahedronGeometry, Matrix4, Color } from "three";
 
 import CannonUtils from "./CannonUtils";
 
@@ -12,6 +14,7 @@ const D20 = ({ position, color }) => {
   const [lowVelocity, setLowVelocity] = useState(false);
   const [atRest, setAtRest] = useState(false);
   const [lastContactId, setLastContactId] = useState(null);
+  const centroidsRef = useRef([]);
   const interval = useRef(null);
   const geometry = useMemo(() => new IcosahedronGeometry(1, 0), []);
   const args = useMemo(
@@ -30,7 +33,7 @@ const D20 = ({ position, color }) => {
       }
     },
     onCollide: (e) => {
-      if(lastContactId !== e.contact.id) {
+      if (lastContactId !== e.contact.id) {
         setLastContactId(e.contact.id);
       }
     },
@@ -49,6 +52,10 @@ const D20 = ({ position, color }) => {
     ];
   }, []);
 
+  const resetVelocity = useCallback(() => {
+    return [Math.random() * 3, Math.random() * 3, Math.random() * 3];
+  }, []);
+
   const resetAngularVelocity = useCallback(() => {
     return [
       Math.random() * 20 - 10,
@@ -62,8 +69,9 @@ const D20 = ({ position, color }) => {
     setLowVelocity(false);
     api.position.set(...position);
     api.rotation.set(...resetRotation());
+    api.velocity.set(...resetVelocity());
     api.angularVelocity.set(...resetAngularVelocity());
-  }, [api, resetRotation, resetAngularVelocity]);
+  }, [api, resetRotation, resetVelocity, resetAngularVelocity]);
 
   const onRest = useCallback(() => {
     setAtRest(true);
@@ -125,6 +133,16 @@ const D20 = ({ position, color }) => {
     return () => clearInterval(interval.current);
   }, [collidingPlane, interval.current, lowVelocity]);
 
+  useFrame(() => {
+    if (ref.current) {
+      const worldMatrix = ref.current.matrixWorld;
+      const updatedCentroids = CannonUtils.getCentroids(geometry).map(
+        (centroid) => centroid.applyMatrix4(worldMatrix) 
+      );
+      centroidsRef.current = updatedCentroids;
+    }
+  });
+
   return (
     <>
       <mesh
@@ -149,6 +167,18 @@ const D20 = ({ position, color }) => {
               : color
           }
         />
+        {centroidsRef.current.map((centroid, index) => (
+          <Text
+            key={index}
+            position={centroid}
+            fontSize={0.5}
+            color="white"
+            anchorX="center"
+            anchorY="center"
+          >
+            {index + 1}
+          </Text>
+        ))}
       </mesh>
     </>
   );

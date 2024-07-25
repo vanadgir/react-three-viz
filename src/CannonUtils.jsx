@@ -77,6 +77,30 @@ class CannonUtils {
 
     return [points.map((v) => [v.x, v.y, v.z]), cannonFaces];
   }
+
+  static getCentroids(geometry) {
+    const position = geometry.attributes.position;
+    const vertices = [];
+    for (let i = 0; i < position.count; i++) {
+      vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
+    }
+
+    const centroids = [];
+    for (let i = 0; i < position.count; i += 3) {
+      const a = vertices[i];
+      const b = vertices[i + 1];
+      const c = vertices[i + 2];
+
+      const centroid = new THREE.Vector3(
+        (a.x + b.x + c.x) / 3,
+        (a.y + b.y + c.y) / 3,
+        (a.z + b.z + c.z) / 3
+      );
+      centroids.push(centroid);
+    }
+
+    return centroids;
+  }
 }
 
 export default CannonUtils;
