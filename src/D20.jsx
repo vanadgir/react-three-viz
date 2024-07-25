@@ -2,7 +2,7 @@ import { useConvexPolyhedron } from "@react-three/cannon";
 import { useFrame } from "@react-three/fiber";
 import { Text } from "@react-three/drei";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { IcosahedronGeometry, Matrix4, Color } from "three";
+import { IcosahedronGeometry, Color } from "three";
 
 import CannonUtils from "./CannonUtils";
 
@@ -134,12 +134,9 @@ const D20 = ({ position, color }) => {
   }, [collidingPlane, interval.current, lowVelocity]);
 
   useFrame(() => {
+    // this hook gets the current centroids of the geometry's faces
     if (ref.current) {
-      const worldMatrix = ref.current.matrixWorld;
-      const updatedCentroids = CannonUtils.getCentroids(geometry).map(
-        (centroid) => centroid.applyMatrix4(worldMatrix) 
-      );
-      centroidsRef.current = updatedCentroids;
+      centroidsRef.current = CannonUtils.getCentroids(geometry);
     }
   });
 
@@ -173,8 +170,7 @@ const D20 = ({ position, color }) => {
             position={centroid}
             fontSize={0.5}
             color="white"
-            anchorX="center"
-            anchorY="center"
+            anchorY="middle"
           >
             {index + 1}
           </Text>
