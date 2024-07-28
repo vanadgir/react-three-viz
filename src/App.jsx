@@ -4,6 +4,11 @@ import { OrbitControls } from "@react-three/drei";
 import { Suspense } from "react";
 import { Color } from "three";
 
+import D4 from "./D4";
+import D6 from "./D6";
+import D8 from "./D8";
+import D10 from "./D10";
+import D12 from "./D12";
 import D20 from "./D20";
 import TablePlane from "./TablePlane";
 
@@ -29,8 +34,12 @@ const App = () => {
           <TablePlane />
         </Suspense>
 
-        <D20 position={[-2, 3, -5]} color={new Color("red")} />
-        <D20 position={[2, 3, -5]} color={new Color("green")} />
+        <D20 position={[-2, 3, -5]} color={new Color("purple")} />
+        <D12 position={[1, 3, 5]} color={new Color("blue")} />
+        <D10 position={[-6, 3, 5]} color={new Color("red")} />
+        <D8 position={[3, 3, 5]} color={new Color("orange")} />
+        <D6 position={[2, 3, -5]} color={new Color("green")} />
+        <D4 position={[-1, 3, 5]} color={new Color("grey")} />
       </Physics>
       <OrbitControls />
     </Canvas>
