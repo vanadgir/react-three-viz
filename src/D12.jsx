@@ -1,17 +1,17 @@
 import { useConvexPolyhedron } from "@react-three/cannon";
 import { useMemo, useState } from "react";
-import { IcosahedronGeometry } from "three";
+import { DodecahedronGeometry } from "three";
 
 import Dx from "./Dx";
 
 import CannonUtils from "./CannonUtils";
-import { D20_RADIUS } from "./constants";
+import { D12_RADIUS } from "./constants"; 
 
-const D20 = ({ position, color }) => {
+const D12 = ({ position, color }) => {
   const [collidingPlane, setCollidingPlane] = useState(false);
   const [lastContactId, setLastContactId] = useState(null);
 
-  const geometry = useMemo(() => new IcosahedronGeometry(D20_RADIUS, 0), []);
+  const geometry = useMemo(() => new DodecahedronGeometry(D12_RADIUS, 0), []);
   const args = useMemo(
     () => CannonUtils.toConvexPolyhedronProps(geometry),
     [geometry]
@@ -19,7 +19,7 @@ const D20 = ({ position, color }) => {
   const [ref, api] = useConvexPolyhedron(() => ({
     args,
     mass: 1,
-    position: position,
+    position,
     restitution: 0.8,
     onCollideBegin: (e) => {
       if (e.body.geometry.type === "PlaneGeometry") {
@@ -48,9 +48,9 @@ const D20 = ({ position, color }) => {
       lastContactId={lastContactId}
       collidingPlane={collidingPlane}
     >
-      <icosahedronGeometry args={[D20_RADIUS, 0]} />
+      <dodecahedronGeometry args={[D12_RADIUS]} />
     </Dx>
   );
 };
 
-export default D20;
+export default D12;
