@@ -5,17 +5,17 @@ import Dx from "./Dx";
 
 import { D20_CONST } from "./constants";
 
-const D20 = ({ position, color }) => {
+const D20 = (props = { position, radius, color, textColor }) => {
   const geometry = useMemo(() => {
-    const retVal = new IcosahedronGeometry(D20_CONST.RADIUS, 0);
+    const retVal = new IcosahedronGeometry(props.radius, 0);
     retVal.name = D20_CONST.NAME;
     retVal.groupSize = D20_CONST.GROUP_SIZE;
     return retVal;
   }, []);
 
   return (
-    <Dx geometry={geometry} position={position} color={color}>
-      <icosahedronGeometry args={[D20_CONST.RADIUS, 0]} />
+    <Dx {...props} geometry={geometry}>
+      <icosahedronGeometry args={[props.radius, 0]} />
     </Dx>
   );
 };

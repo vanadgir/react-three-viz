@@ -1,10 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Text } from "@react-three/drei";
 import { Color } from "three";
 import { useConvexPolyhedron } from "@react-three/cannon";
@@ -16,8 +10,17 @@ import {
   randomRotation,
   randomVelocity,
 } from "./Vec3Utils";
+import font from "../assets/hobbitonbrushhand.ttf";
 
-const Dx = ({ children, inertiaMod, geometry, position, color }) => {
+const Dx = ({
+  children,
+  inertiaMod,
+  geometry,
+  position,
+  radius,
+  color,
+  textColor,
+}) => {
   const [collidingPlane, setCollidingPlane] = useState(false);
   const [lastContactId, setLastContactId] = useState(null);
   const [hovered, setHover] = useState(false);
@@ -130,7 +133,7 @@ const Dx = ({ children, inertiaMod, geometry, position, color }) => {
       if (index === roll) {
         if (index === 0) return "red";
         if (index === 19) return "green";
-        return "blue";
+        return textColor;
       }
     },
     [roll]
@@ -171,10 +174,11 @@ const Dx = ({ children, inertiaMod, geometry, position, color }) => {
             <Text
               mass={0}
               key={index}
+              font={font}
               position={centroid.multiplyScalar(1.03)}
-              fontSize={0.4}
-              color={assignColor(index)}
-              characters="0123456789"
+              fontSize={0.4 * radius}
+              color={assignColor(index) || textColor}
+              characters="0123456789."
               quaternion={quaternion}
               // castShadow
               // receiveShadow
