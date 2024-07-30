@@ -12,10 +12,13 @@ const D12 = ({ position, color }) => {
   const [lastContactId, setLastContactId] = useState(null);
 
   const geometry = useMemo(() => new DodecahedronGeometry(D12_RADIUS, 0), []);
+  geometry.name = "d12";
+
   const args = useMemo(
     () => CannonUtils.toConvexPolyhedronProps(geometry),
     [geometry]
   );
+
   const [ref, api] = useConvexPolyhedron(() => ({
     args,
     mass: 1,

@@ -53,11 +53,13 @@ const D10 = ({ position, color }) => {
       new PolyhedronGeometry(geometryArgs[0], geometryArgs[1], D10_RADIUS, 0),
     [geometryArgs]
   );
+  geometry.name = "d10";
 
   const args = useMemo(
     () => CannonUtils.toConvexPolyhedronProps(geometry, 3),
     [geometry]
   );
+
   const [ref, api] = useConvexPolyhedron(() => ({
     args,
     mass: 1,

@@ -1,7 +1,14 @@
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Text } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { forwardRef, useCallback, useEffect, useRef, useState } from "react";
 import { Color } from "three";
+
 
 import { ZEROISH } from "./constants";
 import CannonUtils from "./CannonUtils";
@@ -13,23 +20,26 @@ import {
 
 const Dx = forwardRef(
   (
-    {
-      children,
-      api,
-      inertiaMod,
-      geometry,
-      position,
-      color,
-      lastContactId,
-      collidingPlane,
-    },
+    { children, api, inertiaMod, geometry, position, color, collidingPlane },
     ref
   ) => {
     const [hovered, setHover] = useState(false);
     const [lowVelocity, setLowVelocity] = useState(false);
     const [atRest, setAtRest] = useState(false);
-    const centroidsRef = useRef([]);
     const interval = useRef(null);
+
+    const centroids = useMemo(
+      () => CannonUtils.getCentroids(geometry),
+      [geometry]
+    );
+    const vertices = useMemo(
+      () => CannonUtils.getVertices(geometry),
+      [geometry]
+    );
+    const normals = useMemo(
+      () => CannonUtils.getNormals(geometry),
+      [geometry]
+    );
 
     const resetRoll = useCallback(() => {
       setHover(false);
@@ -42,8 +52,17 @@ const Dx = forwardRef(
 
     const onRest = useCallback(() => {
       setAtRest(true);
-            console.log(`You rolled a ${lastContactId + 1}!`);
-    }, [lastContactId]);
+
+      console.log(geometry.name);
+      const [result, resultType] = CannonUtils.getResult(
+        ref.current.matrixWorld,
+        api.position,
+        centroids,
+        vertices
+      );
+
+      console.log(`You have rolled ${result}! (${resultType})`);
+    }, []);
 
     useEffect(() => {
       // this effect checks the velocity of the die, and if any velocity values are low enough,
@@ -82,7 +101,7 @@ const Dx = forwardRef(
       } else if (!lowVelocity || !collidingPlane) {
         if (interval.current) {
           clearInterval(interval.current);
-                  }
+        }
         if (atRest) {
           setAtRest(false);
         }
@@ -94,13 +113,6 @@ const Dx = forwardRef(
       // when the die first loads, spin it
       api.angularVelocity.set(...randomAngularVelocity());
     }, []);
-
-    useFrame(() => {
-      // this hook gets the current centroids of the geometry's faces
-      if (ref) {
-        centroidsRef.current = CannonUtils.getCentroids(geometry);
-      }
-    });
 
     return (
       <>
@@ -126,17 +138,23 @@ const Dx = forwardRef(
                 : color
             }
           />
-          {/* {centroidsRef.current.map((centroid, index) => (
-            <Text
-              key={index}
-              position={centroid}
-              fontSize={0.5}
-              color="white"
-              anchorY="middle"
-            >
-              {index + 1}
-            </Text>
-          ))} */}
+          {centroids.map((centroid, index) => {
+            const quaternion = CannonUtils.calculateFaceQuaternion(normals[index]);
+
+            return (
+              <Text
+                mass={0}
+                key={index}
+                position={centroid.multiplyScalar(1.02)}
+                fontSize={0.4}
+                color="white"
+                characters="0123456789"
+                quaternion={quaternion}
+              >
+                {`${index + 1}`}
+              </Text>
+            );
+          })}
         </mesh>
       </>
     );

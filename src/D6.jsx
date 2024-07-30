@@ -11,6 +11,8 @@ const D6 = ({ position, color }) => {
   const [lastContactId, setLastContactId] = useState(null);
 
   const geometry = useMemo(() => new BoxGeometry(D6_RADIUS), []);
+  geometry.name = "d6";
+
   const [ref, api] = useBox(() => ({
     args: [D6_RADIUS, D6_RADIUS, D6_RADIUS],
     mass: 1,
