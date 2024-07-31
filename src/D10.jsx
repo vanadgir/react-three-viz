@@ -24,24 +24,34 @@ const D10 = ({ position, color }) => {
     }
 
     const faces = [
+      // 0
+      [0, 11, 2],
       [0, 2, 3],
+      // 1
       [0, 3, 4],
       [0, 4, 5],
+      // 2
       [0, 5, 6],
       [0, 6, 7],
+      // 3
       [0, 7, 8],
       [0, 8, 9],
+      // 4
       [0, 9, 10],
       [0, 10, 11],
-      [0, 11, 2],
+      // 5
       [1, 3, 2],
       [1, 4, 3],
+      // 6
       [1, 5, 4],
       [1, 6, 5],
+      // 7
       [1, 7, 6],
       [1, 8, 7],
+      // 8
       [1, 9, 8],
       [1, 10, 9],
+      // 9
       [1, 11, 10],
       [1, 2, 11],
     ].flat();
@@ -53,11 +63,14 @@ const D10 = ({ position, color }) => {
       new PolyhedronGeometry(geometryArgs[0], geometryArgs[1], D10_RADIUS, 0),
     [geometryArgs]
   );
+  geometry.name = "d10";
+  geometry.groupSize = 2;
 
   const args = useMemo(
     () => CannonUtils.toConvexPolyhedronProps(geometry, 3),
     [geometry]
   );
+
   const [ref, api] = useConvexPolyhedron(() => ({
     args,
     mass: 1,

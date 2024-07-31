@@ -18,16 +18,16 @@ const App = () => {
   return (
     <Canvas
       shadows
-      camera={{ position: [8, 8, 8] }}
+      camera={{ position: [12, 12, 12] }}
       dpr={[1, 2]}
       gl={{ alpha: false }}
     >
       <directionalLight
         castShadow
-        position={[2.5, 8, 5]}
+        position={[2.5, 30, 5]}
         shadow-mapSize={[1024, 1024]}
       >
-        <orthographicCamera attach="shadow-camera" args={[-10, 10, 10, -10]} />
+        <orthographicCamera attach="shadow-camera" args={[-20, 20, 20, -20]} />
       </directionalLight>
       <Physics>
         <Suspense>

@@ -5,6 +5,7 @@
 import * as THREE from "three";
 
 class CannonUtils {
+  // turns mesh information into physics compatible format
   static toConvexPolyhedronProps(geometry) {
     const position = geometry.attributes.position;
     const normal = geometry.attributes.normal;
@@ -71,15 +72,30 @@ class CannonUtils {
       faces.splice(idx, 1);
     }
 
-    const cannonFaces = faces.map(function (f) {
-      return [f.a, f.b, f.c];
-    });
-
-    return [points.map((v) => [v.x, v.y, v.z]), cannonFaces];
+    return [
+      points.map((v) => [v.x, v.y, v.z]),
+      faces.map((f) => [f.a, f.b, f.c]),
+    ];
   }
 
+  // helper function for averaging groups of vectors
+  static getVector3Average(vectors, groupSize) {
+    let averages = [];
+    for (let i = 0; i < vectors.length; i += groupSize) {
+      const group = vectors.slice(i, i + groupSize);
+      const average = group
+        .reduce((acc, vec) => acc.add(vec), new THREE.Vector3())
+        .divideScalar(group.length);
+      averages.push(average);
+    }
+
+    return averages;
+  }
+
+  // returns the list of all centroids (faces)
   static getCentroids(geometry) {
     const position = geometry.attributes.position;
+
     const vertices = [];
     for (let i = 0; i < position.count; i++) {
       vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
@@ -99,7 +115,79 @@ class CannonUtils {
       centroids.push(centroid);
     }
 
+    // takes average of centroid groups when shape
+    // contains faces composed of multiple triangles
+    if (geometry.groupSize > 1) {
+      return this.getVector3Average(centroids, geometry.groupSize);
+    }
+
     return centroids;
+  }
+
+  // returns the list of vertices
+  static getVertices(geometry) {
+    const position = geometry.attributes.position;
+    const vertices = [];
+    for (let i = 0; i < position.count; i++) {
+      vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
+    }
+
+    return vertices;
+  }
+
+  // returns the list of face normals
+  static getNormals(geometry) {
+    const position = geometry.attributes.position;
+    const normals = [];
+    for (let i = 0; i < position.count; i += 3) {
+      const a = new THREE.Vector3().fromBufferAttribute(position, i);
+      const b = new THREE.Vector3().fromBufferAttribute(position, i + 1);
+      const c = new THREE.Vector3().fromBufferAttribute(position, i + 2);
+      const normal = new THREE.Vector3()
+        .subVectors(b, a)
+        .cross(new THREE.Vector3().subVectors(c, a))
+        .normalize();
+      normals.push(normal);
+    }
+
+    // takes average of normal groups when shape
+    // contains faces composed of multiple triangles
+    if (geometry.groupSize > 1) {
+      return this.getVector3Average(normals, geometry.groupSize);
+    }
+
+    return normals;
+  }
+
+  // returns a quaternion that can rotate a component to lay flat on its face
+  static calculateFaceQuaternion(faceNormal) {
+    const quaternion = new THREE.Quaternion();
+    quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), faceNormal);
+    return quaternion;
+  }
+
+  // returns the roll result by calculating dot product (a • b)
+  // where a = (center - centroid) and b = up
+  static getResult(name, mat, center, centroids) {
+    const worldCenter = new THREE.Vector3(center.x, center.y, center.z);
+    const trueVertical =
+      name === "d4" ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
+    let largestDotProd = -Infinity;
+    let result;
+
+    centroids.map((c, index) => {
+      const worldPosition = new THREE.Vector3(c.x, c.y, c.z).applyMatrix4(mat);
+      const direction = new THREE.Vector3()
+        .subVectors(worldPosition, worldCenter)
+        .normalize();
+      const dotProd = direction.dot(trueVertical);
+      if (dotProd > largestDotProd) {
+        largestDotProd = dotProd;
+        result = index;
+      }
+    });
+
+    return result;
   }
 }
 

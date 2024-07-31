@@ -12,10 +12,14 @@ const D4 = ({ position, color }) => {
   const [lastContactId, setLastContactId] = useState(null);
 
   const geometry = useMemo(() => new TetrahedronGeometry(D4_RADIUS, 0), []);
+  geometry.name = "d4";
+  geometry.groupSize = 1;
+
   const args = useMemo(
     () => CannonUtils.toConvexPolyhedronProps(geometry),
     [geometry]
   );
+
   const [ref, api] = useConvexPolyhedron(() => ({
     args,
     mass: 1,

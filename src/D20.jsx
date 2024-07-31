@@ -12,10 +12,14 @@ const D20 = ({ position, color }) => {
   const [lastContactId, setLastContactId] = useState(null);
 
   const geometry = useMemo(() => new IcosahedronGeometry(D20_RADIUS, 0), []);
+  geometry.name = "d20";
+  geometry.groupSize = 1;
+
   const args = useMemo(
     () => CannonUtils.toConvexPolyhedronProps(geometry),
     [geometry]
   );
+  
   const [ref, api] = useConvexPolyhedron(() => ({
     args,
     mass: 1,
