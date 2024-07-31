@@ -167,8 +167,8 @@ const Dx = forwardRef(
                   color={assignColor(index)}
                   characters="0123456789"
                   quaternion={quaternion}
-                  castShadow
-                  receiveShadow
+                  // castShadow
+                  // receiveShadow
                 >
                   {`${index + 1}` + `${index === 5 || index === 8 ? "." : ""}`}
                 </Text>

@@ -1,24 +1,65 @@
-import { useBox } from "@react-three/cannon";
+import { useConvexPolyhedron } from "@react-three/cannon";
 import { useMemo, useState } from "react";
-import { BoxGeometry } from "three";
+import { PolyhedronGeometry } from "three";
 
 import Dx from "./Dx";
 
+import CannonUtils from "./CannonUtils";
 import { D6_RADIUS } from "./constants";
 
 const D6 = ({ position, color }) => {
   const [collidingPlane, setCollidingPlane] = useState(false);
   const [lastContactId, setLastContactId] = useState(null);
 
-  const geometry = useMemo(() => new BoxGeometry(D6_RADIUS), []);
-  geometry.name = "d6";
-  geometry.groupSize = 1;
+  const geometryArgs = useMemo(() => {
+    const sides = 6;
+    const vertices = [
+      [-1, -1, -1],
+      [1, -1, -1],
+      [1, 1, -1],
+      [-1, 1, -1],
+      [-1, -1, 1],
+      [1, -1, 1],
+      [1, 1, 1],
+      [-1, 1, 1],
+    ].flat();
 
-  const [ref, api] = useBox(() => ({
-    args: [D6_RADIUS, D6_RADIUS, D6_RADIUS],
+    const faces = [
+      [2, 1, 0],
+      [0, 3, 2],
+      [0, 4, 7],
+      [7, 3, 0],
+      [0, 1, 5],
+      [5, 4, 0],
+      [1, 2, 6],
+      [6, 5, 1],
+      [2, 3, 7],
+      [7, 6, 2],
+      [4, 5, 6],
+      [6, 7, 4],
+    ].flat();
+
+    return [vertices, faces];
+  }, []);
+
+  const geometry = useMemo(
+    () =>
+      new PolyhedronGeometry(geometryArgs[0], geometryArgs[1], D6_RADIUS, 0),
+    [geometryArgs]
+  );
+  geometry.name = "d6";
+  geometry.groupSize = 2;
+
+  const args = useMemo(
+    () => CannonUtils.toConvexPolyhedronProps(geometry, 1),
+    [geometry]
+  );
+
+  const [ref, api] = useConvexPolyhedron(() => ({
+    args,
     mass: 1,
     position,
-    restitution: 1,
+    restitution: 0.8,
     onCollideBegin: (e) => {
       if (e.body.geometry.type === "PlaneGeometry") {
         setCollidingPlane(true);
@@ -46,7 +87,7 @@ const D6 = ({ position, color }) => {
       lastContactId={lastContactId}
       collidingPlane={collidingPlane}
     >
-      <boxGeometry args={[D6_RADIUS, D6_RADIUS, D6_RADIUS]} />
+      <polyhedronGeometry args={[...geometryArgs, D6_RADIUS, 0]} />
     </Dx>
   );
 };
