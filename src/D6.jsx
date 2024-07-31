@@ -12,12 +12,13 @@ const D6 = ({ position, color }) => {
 
   const geometry = useMemo(() => new BoxGeometry(D6_RADIUS), []);
   geometry.name = "d6";
+  geometry.groupSize = 1;
 
   const [ref, api] = useBox(() => ({
     args: [D6_RADIUS, D6_RADIUS, D6_RADIUS],
     mass: 1,
     position,
-    restitution: 0.8,
+    restitution: 1,
     onCollideBegin: (e) => {
       if (e.body.geometry.type === "PlaneGeometry") {
         setCollidingPlane(true);

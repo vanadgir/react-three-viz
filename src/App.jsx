@@ -18,14 +18,14 @@ const App = () => {
   return (
     <Canvas
       shadows
-      camera={{ position: [8, 8, 8] }}
+      camera={{ position: [12, 12, 12] }}
       dpr={[1, 2]}
       gl={{ alpha: false }}
     >
       <directionalLight
         castShadow
-        position={[2.5, 8, 5]}
-        shadow-mapSize={[1024, 1024]}
+        position={[2.5, 30, 5]}
+        shadow-mapSize={[4096, 4096]}
       >
         <orthographicCamera attach="shadow-camera" args={[-10, 10, 10, -10]} />
       </directionalLight>
@@ -40,6 +40,7 @@ const App = () => {
         <D8 position={[3, 3, 5]} color={new Color("orange")} />
         <D6 position={[2, 3, -5]} color={new Color("green")} />
         <D4 position={[-1, 3, 5]} color={new Color("grey")} />
+
       </Physics>
       <OrbitControls />
     </Canvas>

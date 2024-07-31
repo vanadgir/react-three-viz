@@ -72,11 +72,21 @@ class CannonUtils {
       faces.splice(idx, 1);
     }
 
-    const cannonFaces = faces.map(function (f) {
-      return [f.a, f.b, f.c];
-    });
+    return [points.map((v) => [v.x, v.y, v.z]), faces.map((f) => [f.a, f.b, f.c])];
+  }
 
-    return [points.map((v) => [v.x, v.y, v.z]), cannonFaces];
+  // helper function for averaging groups of vectors
+  static getVector3Average(vectors, groupSize) {
+    let averages = [];
+    for (let i = 0; i < vectors.length; i += groupSize) {
+      const group = vectors.slice(i, i + groupSize);
+      const average = group
+        .reduce((acc, vec) => acc.add(vec), new THREE.Vector3())
+        .divideScalar(group.length);
+      averages.push(average);
+    }
+
+    return averages;
   }
 
   // returns the list of all centroids of the geometry
@@ -84,6 +94,7 @@ class CannonUtils {
   // due to some faces containing multiple triangles
   static getCentroids(geometry) {
     const position = geometry.attributes.position;
+
     const vertices = [];
     for (let i = 0; i < position.count; i++) {
       vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
@@ -103,7 +114,9 @@ class CannonUtils {
       centroids.push(centroid);
     }
 
-    // TODO: handle cases where there are multiple triangles per face
+    if (geometry.groupSize > 1) {
+      return this.getVector3Average(centroids, geometry.groupSize);
+    }
 
     return centroids;
   }
@@ -116,64 +129,7 @@ class CannonUtils {
       vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
     }
 
-    const verticesMap = {};
-    const points = [];
-    const changes = [];
-    for (let i = 0, il = vertices.length; i < il; i++) {
-      const v = vertices[i];
-      const key =
-        Math.round(v.x * 100) +
-        "_" +
-        Math.round(v.y * 100) +
-        "_" +
-        Math.round(v.z * 100);
-      if (verticesMap[key] === undefined) {
-        verticesMap[key] = i;
-        points.push({ x: vertices[i].x, y: vertices[i].y, z: vertices[i].z });
-        changes[i] = points.length - 1;
-      } else {
-        changes[i] = changes[verticesMap[key]];
-      }
-    }
-
-    return points.map((v) => new THREE.Vector3(v.x, v.y, v.z));
-  }
-
-  // returns the roll result as well as the source (centroid or vertex)
-  static getResult(mat, center, centroids, vertices) {
-    const worldCenter = new THREE.Vector3(center.x, center.y, center.z);
-    const trueVertical = new THREE.Vector3(0, 1, 0);
-    let largestDotProd = -Infinity;
-    let result;
-    let resultType;
-
-    centroids.map((c, index) => {
-      const worldPosition = new THREE.Vector3(c.x, c.y, c.z).applyMatrix4(mat);
-      const direction = new THREE.Vector3()
-        .subVectors(worldPosition, worldCenter)
-        .normalize();
-      const dotProd = direction.dot(trueVertical);
-      if (dotProd > largestDotProd) {
-        largestDotProd = dotProd;
-        result = index + 1;
-        resultType = "centroid";
-      }
-    });
-
-    vertices.map((v, index) => {
-      const worldPosition = new THREE.Vector3(v.x, v.y, v.z).applyMatrix4(mat);
-      const direction = new THREE.Vector3()
-        .subVectors(worldPosition, worldCenter)
-        .normalize();
-      const dotProd = direction.dot(trueVertical);
-      if (dotProd > largestDotProd) {
-        largestDotProd = dotProd;
-        result = index + 1;
-        resultType = "vertex";
-      }
-    });
-
-    return [result, resultType];
+    return vertices;
   }
 
   // returns the list of face normals
@@ -190,6 +146,11 @@ class CannonUtils {
         .normalize();
       normals.push(normal);
     }
+
+    if (geometry.groupSize > 1) {
+      return this.getVector3Average(normals, geometry.groupSize);
+    }
+
     return normals;
   }
 
@@ -198,6 +159,29 @@ class CannonUtils {
     const quaternion = new THREE.Quaternion();
     quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), faceNormal);
     return quaternion;
+  }
+
+  // returns the roll result as well as the source (centroid or vertex)
+  static getResult(name, mat, center, centroids) {
+    const worldCenter = new THREE.Vector3(center.x, center.y, center.z);
+    const trueVertical =
+      name === "d4" ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
+    let largestDotProd = -Infinity;
+    let result;
+
+    centroids.map((c, index) => {
+      const worldPosition = new THREE.Vector3(c.x, c.y, c.z).applyMatrix4(mat);
+      const direction = new THREE.Vector3()
+        .subVectors(worldPosition, worldCenter)
+        .normalize();
+      const dotProd = direction.dot(trueVertical);
+      if (dotProd > largestDotProd) {
+        largestDotProd = dotProd;
+        result = index;
+      }
+    });
+
+    return result;
   }
 }
 

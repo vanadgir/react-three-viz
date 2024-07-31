@@ -13,6 +13,7 @@ const D8 = ({ position, color }) => {
 
   const geometry = useMemo(() => new OctahedronGeometry(D8_RADIUS, 0), []);
   geometry.name = "d8";
+  geometry.groupSize = 1;
 
   const args = useMemo(
     () => CannonUtils.toConvexPolyhedronProps(geometry, 3),

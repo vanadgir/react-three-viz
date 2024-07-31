@@ -9,7 +9,6 @@ import {
 import { Text } from "@react-three/drei";
 import { Color } from "three";
 
-
 import { ZEROISH } from "./constants";
 import CannonUtils from "./CannonUtils";
 import {
@@ -26,6 +25,7 @@ const Dx = forwardRef(
     const [hovered, setHover] = useState(false);
     const [lowVelocity, setLowVelocity] = useState(false);
     const [atRest, setAtRest] = useState(false);
+    const [roll, setRoll] = useState(null);
     const interval = useRef(null);
 
     const centroids = useMemo(
@@ -36,12 +36,10 @@ const Dx = forwardRef(
       () => CannonUtils.getVertices(geometry),
       [geometry]
     );
-    const normals = useMemo(
-      () => CannonUtils.getNormals(geometry),
-      [geometry]
-    );
+    const normals = useMemo(() => CannonUtils.getNormals(geometry), [geometry]);
 
     const resetRoll = useCallback(() => {
+      setRoll(null);
       setHover(false);
       setLowVelocity(false);
       api.position.set(...position);
@@ -52,17 +50,19 @@ const Dx = forwardRef(
 
     const onRest = useCallback(() => {
       setAtRest(true);
+      api.velocity.set(0, 0, 0);
 
-      console.log(geometry.name);
-      const [result, resultType] = CannonUtils.getResult(
+      const result = CannonUtils.getResult(
+        geometry.name,
         ref.current.matrixWorld,
         api.position,
-        centroids,
-        vertices
+        centroids
       );
 
-      console.log(`You have rolled ${result}! (${resultType})`);
-    }, []);
+      setRoll(result);
+
+      // console.log(`${geometry.name}: You have rolled ${result + 1}!`);
+    }, [api]);
 
     useEffect(() => {
       // this effect checks the velocity of the die, and if any velocity values are low enough,
@@ -112,7 +112,20 @@ const Dx = forwardRef(
     useEffect(() => {
       // when the die first loads, spin it
       api.angularVelocity.set(...randomAngularVelocity());
+      // reset the roll
+      setRoll(null);
     }, []);
+
+    const assignColor = useCallback(
+      (index) => {
+        if (index === roll) {
+          if (index === 0) return "red";
+          if (index === 19) return "green";
+          return "blue";
+        }
+      },
+      [roll]
+    );
 
     return (
       <>
@@ -132,29 +145,36 @@ const Dx = forwardRef(
           <meshStandardMaterial
             color={
               hovered && atRest
-                ? "yellow"
+                ? color.clone().add(new Color(0.2, 0.2, 0.2))
                 : atRest
                 ? color.clone().add(new Color(0.5, 0.5, 0.5))
                 : color
             }
           />
-          {centroids.map((centroid, index) => {
-            const quaternion = CannonUtils.calculateFaceQuaternion(normals[index]);
+          {
+            // show centroid labels
+            centroids.map((centroid, index) => {
+              const quaternion = CannonUtils.calculateFaceQuaternion(
+                normals[index]
+              );
 
-            return (
-              <Text
-                mass={0}
-                key={index}
-                position={centroid.multiplyScalar(1.02)}
-                fontSize={0.4}
-                color="white"
-                characters="0123456789"
-                quaternion={quaternion}
-              >
-                {`${index + 1}`}
-              </Text>
-            );
-          })}
+              return (
+                <Text
+                  mass={0}
+                  key={index}
+                  position={centroid.multiplyScalar(1.03)}
+                  fontSize={0.4}
+                  color={assignColor(index)}
+                  characters="0123456789"
+                  quaternion={quaternion}
+                  castShadow
+                  receiveShadow
+                >
+                  {`${index + 1}` + `${index === 5 || index === 8 ? "." : ""}`}
+                </Text>
+              );
+            })
+          }
         </mesh>
       </>
     );
