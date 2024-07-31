@@ -117,6 +117,9 @@ const Dx = forwardRef(
     }, []);
 
     const assignColor = useCallback(
+      // this callback sets the text color based on roll state
+      // Nat 1 turns red
+      // Nat 20 turns green
       (index) => {
         if (index === roll) {
           if (index === 0) return "red";
@@ -151,30 +154,29 @@ const Dx = forwardRef(
                 : color
             }
           />
-          {
-            // show centroid labels
-            centroids.map((centroid, index) => {
-              const quaternion = CannonUtils.calculateFaceQuaternion(
-                normals[index]
-              );
+          {centroids.map((centroid, index) => {
+            // this quaternion represents a rotation
+            // equal to the orientation of the face normal
+            const quaternion = CannonUtils.calculateFaceQuaternion(
+              normals[index]
+            );
 
-              return (
-                <Text
-                  mass={0}
-                  key={index}
-                  position={centroid.multiplyScalar(1.03)}
-                  fontSize={0.4}
-                  color={assignColor(index)}
-                  characters="0123456789"
-                  quaternion={quaternion}
-                  // castShadow
-                  // receiveShadow
-                >
-                  {`${index + 1}` + `${index === 5 || index === 8 ? "." : ""}`}
-                </Text>
-              );
-            })
-          }
+            return (
+              <Text
+                mass={0}
+                key={index}
+                position={centroid.multiplyScalar(1.03)}
+                fontSize={0.4}
+                color={assignColor(index)}
+                characters="0123456789"
+                quaternion={quaternion}
+                // castShadow
+                // receiveShadow
+              >
+                {`${index + 1}` + `${index === 5 || index === 8 ? "." : ""}`}
+              </Text>
+            );
+          })}
         </mesh>
       </>
     );

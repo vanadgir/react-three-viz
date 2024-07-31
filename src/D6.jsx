@@ -12,7 +12,7 @@ const D6 = ({ position, color }) => {
   const [lastContactId, setLastContactId] = useState(null);
 
   const geometryArgs = useMemo(() => {
-    const sides = 6;
+    // const sides = 6;
     const vertices = [
       [-1, -1, -1],
       [1, -1, -1],
@@ -25,16 +25,22 @@ const D6 = ({ position, color }) => {
     ].flat();
 
     const faces = [
+      // 0
       [2, 1, 0],
       [0, 3, 2],
+      // 1
       [0, 4, 7],
       [7, 3, 0],
+      // 2
       [0, 1, 5],
       [5, 4, 0],
+      // 3
       [1, 2, 6],
       [6, 5, 1],
+      // 4
       [2, 3, 7],
       [7, 6, 2],
+      // 5
       [4, 5, 6],
       [6, 7, 4],
     ].flat();

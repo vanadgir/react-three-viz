@@ -72,7 +72,10 @@ class CannonUtils {
       faces.splice(idx, 1);
     }
 
-    return [points.map((v) => [v.x, v.y, v.z]), faces.map((f) => [f.a, f.b, f.c])];
+    return [
+      points.map((v) => [v.x, v.y, v.z]),
+      faces.map((f) => [f.a, f.b, f.c]),
+    ];
   }
 
   // helper function for averaging groups of vectors
@@ -89,9 +92,7 @@ class CannonUtils {
     return averages;
   }
 
-  // returns the list of all centroids of the geometry
-  // may return more than the conventional number of centroids
-  // due to some faces containing multiple triangles
+  // returns the list of all centroids (faces)
   static getCentroids(geometry) {
     const position = geometry.attributes.position;
 
@@ -114,6 +115,8 @@ class CannonUtils {
       centroids.push(centroid);
     }
 
+    // takes average of centroid groups when shape
+    // contains faces composed of multiple triangles
     if (geometry.groupSize > 1) {
       return this.getVector3Average(centroids, geometry.groupSize);
     }
@@ -121,7 +124,7 @@ class CannonUtils {
     return centroids;
   }
 
-  // returns the list of all vertices of the geometry
+  // returns the list of vertices
   static getVertices(geometry) {
     const position = geometry.attributes.position;
     const vertices = [];
@@ -147,6 +150,8 @@ class CannonUtils {
       normals.push(normal);
     }
 
+    // takes average of normal groups when shape
+    // contains faces composed of multiple triangles
     if (geometry.groupSize > 1) {
       return this.getVector3Average(normals, geometry.groupSize);
     }
@@ -161,7 +166,8 @@ class CannonUtils {
     return quaternion;
   }
 
-  // returns the roll result as well as the source (centroid or vertex)
+  // returns the roll result by calculating dot product (a • b)
+  // where a = (center - centroid) and b = up
   static getResult(name, mat, center, centroids) {
     const worldCenter = new THREE.Vector3(center.x, center.y, center.z);
     const trueVertical =
