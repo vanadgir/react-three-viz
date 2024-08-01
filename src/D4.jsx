@@ -1,59 +1,26 @@
-import { useConvexPolyhedron } from "@react-three/cannon";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { TetrahedronGeometry } from "three";
 
 import Dx from "./Dx";
 
-import CannonUtils from "./CannonUtils";
-import { D4_RADIUS } from "./constants";
+import { D4_CONST } from "./constants";
 
 const D4 = ({ position, color }) => {
-  const [collidingPlane, setCollidingPlane] = useState(false);
-  const [lastContactId, setLastContactId] = useState(null);
-
-  const geometry = useMemo(() => new TetrahedronGeometry(D4_RADIUS, 0), []);
-  geometry.name = "d4";
-  geometry.groupSize = 1;
-
-  const args = useMemo(
-    () => CannonUtils.toConvexPolyhedronProps(geometry),
-    [geometry]
-  );
-
-  const [ref, api] = useConvexPolyhedron(() => ({
-    args,
-    mass: 1,
-    position,
-    restitution: 0.9,
-    onCollideBegin: (e) => {
-      if (e.body.geometry.type === "PlaneGeometry") {
-        setCollidingPlane(true);
-      }
-    },
-    onCollide: (e) => {
-      if (lastContactId !== e.contact.id) {
-        setLastContactId(e.contact.id);
-      }
-    },
-    onCollideEnd: (e) => {
-      if (e.body.geometry.type === "PlaneGeometry") {
-        setCollidingPlane(false);
-      }
-    },
-  }));
+  const geometry = useMemo(() => {
+    const retVal = new TetrahedronGeometry(D4_CONST.RADIUS, 0);
+    retVal.name = D4_CONST.NAME;
+    retVal.groupSize = D4_CONST.GROUP_SIZE;
+    return retVal;
+  }, []);
 
   return (
     <Dx
-      api={api}
-      ref={ref}
       geometry={geometry}
       position={position}
       color={color}
-      lastContactId={lastContactId}
-      collidingPlane={collidingPlane}
-      inertiaMod={0.02}
+      inertiaMod={D4_CONST.INERTIA_MOD}
     >
-      <tetrahedronGeometry args={[D4_RADIUS, 0]} />
+      <tetrahedronGeometry args={[D4_CONST.RADIUS, 0]} />
     </Dx>
   );
 };

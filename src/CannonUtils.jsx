@@ -6,7 +6,7 @@ import * as THREE from "three";
 
 class CannonUtils {
   // turns mesh information into physics compatible format
-  static toConvexPolyhedronProps(geometry) {
+  static toConvexPolyhedronArgs(geometry) {
     const position = geometry.attributes.position;
     const normal = geometry.attributes.normal;
     const vertices = [];
@@ -76,6 +76,46 @@ class CannonUtils {
       points.map((v) => [v.x, v.y, v.z]),
       faces.map((f) => [f.a, f.b, f.c]),
     ];
+  }
+
+  // gather all the properties needed to build a physics convex from a geometry
+  // also include some overrideable defaults
+  static toConvexPolyhedronProps(
+    geometry,
+    setCollidingPlane,
+    lastContactId,
+    setLastContactId,
+    position = [0, 0, 0],
+    mass = 1,
+    restitution = 0.8,
+    onCollideBegin = (e) => undefined,
+    onCollide = (e) => undefined,
+    onCollideEnd = (e) => undefined
+  ) {
+    return {
+      args: this.toConvexPolyhedronArgs(geometry),
+      mass,
+      position,
+      restitution,
+      onCollideBegin: (e) => {
+        if (e.body.geometry.type === "PlaneGeometry") {
+          onCollideBegin(e);
+          setCollidingPlane(true);
+        }
+      },
+      onCollide: (e) => {
+        if (lastContactId !== e.contact.id) {
+          onCollide(e);
+          setLastContactId(e.contact.id);
+        }
+      },
+      onCollideEnd: (e) => {
+        if (e.body.geometry.type === "PlaneGeometry") {
+          onCollideEnd(e);
+          setCollidingPlane(false);
+        }
+      },
+    };
   }
 
   // helper function for averaging groups of vectors
