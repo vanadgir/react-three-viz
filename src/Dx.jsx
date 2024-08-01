@@ -19,14 +19,27 @@ import {
 
 const Dx = forwardRef(
   (
-    { children, api, inertiaMod, geometry, position, color, collidingPlane },
+    { children, inertiaMod, geometry, position, color },
     ref
   ) => {
+    const [collidingPlane, setCollidingPlane] = useState(false);
+    const [lastContactId, setLastContactId] = useState(null);
     const [hovered, setHover] = useState(false);
     const [lowVelocity, setLowVelocity] = useState(false);
     const [atRest, setAtRest] = useState(false);
     const [roll, setRoll] = useState(null);
     const interval = useRef(null);
+
+    // generate the up-to-frame physics properties from the geometry
+    const [ref, api] = useConvexPolyhedron(() => ({
+      ...CannonUtils.toConvexPolyhedronProps(
+        geometry,
+        setCollidingPlane,
+        lastContactId,
+        setLastContactId,
+        position
+      ),
+    }));
 
     const centroids = useMemo(
       () => CannonUtils.getCentroids(geometry),
