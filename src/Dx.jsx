@@ -3,6 +3,7 @@ import { Text } from "@react-three/drei";
 import { Color } from "three";
 import { useConvexPolyhedron } from "@react-three/cannon";
 
+import { useAudio } from "./contexts/AudioContext";
 import { ZEROISH } from "./constants";
 import CannonUtils from "./CannonUtils";
 import {
@@ -28,6 +29,9 @@ const Dx = ({
   const [atRest, setAtRest] = useState(false);
   const [roll, setRoll] = useState(null);
   const interval = useRef(null);
+  const { createRollResultSFX } = useAudio();
+
+  const rollResultSFX = createRollResultSFX();
 
   // generate the up-to-frame physics properties from the geometry
   const [ref, api] = useConvexPolyhedron(() => ({
@@ -69,6 +73,14 @@ const Dx = ({
     );
 
     setRoll(result);
+
+    if (result === 0) {
+      rollResultSFX("min");
+    } else if (result === centroids.length - 1) {
+      rollResultSFX("max");
+    } else {
+      rollResultSFX();
+    }
 
     // console.log(`${geometry.name}: You have rolled ${result + 1}!`);
   }, [api]);
@@ -132,8 +144,8 @@ const Dx = ({
     (index) => {
       if (index === roll) {
         if (index === 0) return "red";
-        if (index === 19) return "green";
-        return textColor;
+        if (index === centroids.length - 1) return "green";
+        return "blue";
       }
     },
     [roll]
