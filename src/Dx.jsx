@@ -18,6 +18,8 @@ const Dx = ({
   inertiaMod,
   geometry,
   position,
+  mass,
+  restitution,
   radius,
   color,
   textColor,
@@ -29,18 +31,38 @@ const Dx = ({
   const [atRest, setAtRest] = useState(false);
   const [roll, setRoll] = useState(null);
   const interval = useRef(null);
-  const { createRollResultSFX } = useAudio();
+  const { createRollResultSFX, playContactSFX } = useAudio();
 
   const rollResultSFX = createRollResultSFX();
+
+  const onCollideBegin = useCallback((e) => {
+    if (e.body.geometry.type === "PlaneGeometry") {
+      setCollidingPlane(true);
+    }
+  }, []);
+
+  const onCollide = useCallback((e) => {
+    if (lastContactId !== e.contact.id) {
+      setLastContactId(e.contact.id);
+    }
+  }, []);
+
+  const onCollideEnd = useCallback((e) => {
+    if (e.body.geometry.type === "PlaneGeometry") {
+      setCollidingPlane(false);
+    }
+  }, []);
 
   // generate the up-to-frame physics properties from the geometry
   const [ref, api] = useConvexPolyhedron(() => ({
     ...CannonUtils.toConvexPolyhedronProps(
       geometry,
-      setCollidingPlane,
-      lastContactId,
-      setLastContactId,
-      position
+      position,
+      mass,
+      restitution,
+      onCollideBegin,
+      onCollide,
+      onCollideEnd
     ),
   }));
 
