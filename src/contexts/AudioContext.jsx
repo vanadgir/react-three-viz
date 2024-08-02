@@ -3,17 +3,23 @@ import { AudioLoader, AudioListener, Audio } from "three";
 import { useLoader } from "@react-three/fiber";
 
 const AudioContext = createContext();
+const CONTACT_FACTOR = 20;
+const CONTACT_THRESHOLD = 0.0075;
+const CONTACT_DETUNE_RANGE = 300;
 
 export const AudioProvider = ({ children }) => {
   const maxRollSFXBuffer = useLoader(AudioLoader, `../../assets/wahoo.wav`);
   const minRollSFXBuffer = useLoader(AudioLoader, `../../assets/nooo.wav`);
-  const neutralRollSFXBuffer = useLoader(AudioLoader, `../../assets/neutral.mp3`);
+  const neutralRollSFXBuffer = useLoader(
+    AudioLoader,
+    `../../assets/neutral.mp3`
+  );
+  const contactSFXBuffer = useLoader(AudioLoader, "../../assets/dice.wav");
 
-  // this allows the dice to create their own listener for roll results
-  const createRollResultSFX = useCallback(() => {
-    const listener = new AudioListener();
-    
-    const allRollResultSFX = useMemo(() => ({
+  const listener = useMemo(() => new AudioListener(), []);
+
+  const allRollResultSFX = useMemo(
+    () => ({
       max: (() => {
         const audio = new Audio(listener);
         audio.setBuffer(maxRollSFXBuffer);
@@ -34,20 +40,43 @@ export const AudioProvider = ({ children }) => {
         audio.setLoop(false);
         audio.setVolume(0.2);
         return audio;
-      })()
-    }), [maxRollSFXBuffer, minRollSFXBuffer, neutralRollSFXBuffer]);
+      })(),
+    }),
+    [listener, maxRollSFXBuffer, minRollSFXBuffer, neutralRollSFXBuffer]
+  );
 
+  const createRollResultSFX = useCallback(() => {
     return (roll) => {
       const selectedAudio = allRollResultSFX[roll] || allRollResultSFX.neutral;
-      if (selectedAudio.isPlaying) {
-        selectedAudio.stop();
-      }
       selectedAudio.play();
     };
-  }, [maxRollSFXBuffer, minRollSFXBuffer, neutralRollSFXBuffer]);
+  }, [allRollResultSFX]);
+
+  const playContactSFX = useCallback(
+    (impactVelocity) => {
+      const constrained = Math.min(
+        Math.max(impactVelocity / CONTACT_FACTOR / 2, 0),
+        1
+      );
+      if (constrained > CONTACT_THRESHOLD) {
+        const audio = new Audio(listener);
+        audio.setBuffer(contactSFXBuffer);
+        audio.setLoop(false);
+        audio.setVolume(constrained);
+        audio.setDetune(
+          (audio.getDetune() -
+            CONTACT_DETUNE_RANGE / 2 +
+            Math.random() * CONTACT_DETUNE_RANGE) /
+            constrained
+        );
+        audio.play();
+      }
+    },
+    [contactSFXBuffer, listener]
+  );
 
   return (
-    <AudioContext.Provider value={{ createRollResultSFX }}>
+    <AudioContext.Provider value={{ createRollResultSFX, playContactSFX }}>
       {children}
     </AudioContext.Provider>
   );

@@ -30,8 +30,8 @@ const Dx = ({
   const [lowVelocity, setLowVelocity] = useState(false);
   const [atRest, setAtRest] = useState(false);
   const [roll, setRoll] = useState(null);
-  const interval = useRef(null);
   const { createRollResultSFX, playContactSFX } = useAudio();
+  let interval;
 
   const rollResultSFX = createRollResultSFX();
 
@@ -42,6 +42,7 @@ const Dx = ({
   }, []);
 
   const onCollide = useCallback((e) => {
+    playContactSFX(e.contact.impactVelocity);
     if (lastContactId !== e.contact.id) {
       setLastContactId(e.contact.id);
     }
@@ -74,6 +75,7 @@ const Dx = ({
   const normals = useMemo(() => CannonUtils.getNormals(geometry), [geometry]);
 
   const resetRoll = useCallback(() => {
+    setAtRest(false);
     setRoll(null);
     setHover(false);
     setLowVelocity(false);
@@ -138,19 +140,12 @@ const Dx = ({
     // if so, then it starts an interval/timer to see if that persists for half a second.
     // if so, sets atRest to true
     if (lowVelocity && collidingPlane && !atRest) {
-      interval.current = setInterval(() => {
+      interval = setInterval(() => {
         onRest();
       }, 500);
-    } else if (!lowVelocity || !collidingPlane) {
-      if (interval.current) {
-        clearInterval(interval.current);
-      }
-      if (atRest) {
-        setAtRest(false);
-      }
     }
-    return () => clearInterval(interval.current);
-  }, [collidingPlane, interval.current, lowVelocity]);
+    return () => clearInterval(interval);
+  }, [atRest, collidingPlane, lowVelocity]);
 
   useEffect(() => {
     // when the die first loads, spin it
