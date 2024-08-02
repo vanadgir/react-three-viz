@@ -61,7 +61,6 @@ const Dx = ({ children, inertiaMod, geometry, position, color }) => {
     const result = CannonUtils.getResult(
       geometry.name,
       ref.current.matrixWorld,
-      api.position,
       centroids
     );
 
