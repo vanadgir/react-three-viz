@@ -1,6 +1,8 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import { Color } from "three";
 
+import { randomSpawnPosition } from "./Vec3Utils";
+
 import D4 from "./D4";
 import D6 from "./D6";
 import D8 from "./D8";
@@ -45,126 +47,60 @@ const defaultDiceAttributes = {
   },
 };
 
+// references to the components, for dynamic rendering
+const diceComponents = {
+  D4: D4,
+  D6: D6,
+  D8: D8,
+  D10: D10,
+  D12: D12,
+  D20: D20,
+};
+
 // no implementation yet, more like an interface
 export const DiceContext = createContext({
   diceAttributes: defaultDiceAttributes,
   diceInPlay: [],
+  clearDice: () => undefined,
   createDice: (listToCreate) => undefined,
+  updateAttributes: (attribute, key, value) => undefined,
 });
 
 export const DiceProvider = ({ children }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [diceAttributes, setDiceAttributes] = useState(defaultDiceAttributes);
   const [diceInPlay, setDiceInPlay] = useState([]);
 
-  const createD4 = useCallback(
-    (radius) => (
-      <D4
-        position={[-1, 3, 5]}
-        key={diceInPlay.length}
-        radius={radius}
-        color={new Color(diceAttributes.colors["D4"])}
-        textColor={diceAttributes.textColors["D4"]}
-      />
-    ),
-    [diceAttributes, diceInPlay]
-  );
-
-  const createD6 = useCallback(
-    (radius) => (
-      <D6
-        position={[2, 3, -5]}
-        key={diceInPlay.length}
-        radius={radius}
-        color={new Color(diceAttributes.colors["D6"])}
-        textColor={diceAttributes.textColors["D6"]}
-      />
-    ),
-    [diceAttributes, diceInPlay]
-  );
-
-  const createD8 = useCallback(
-    (radius) => (
-      <D8
-        position={[3, 3, 5]}
-        key={diceInPlay.length}
-        radius={radius}
-        color={new Color(diceAttributes.colors["D8"])}
-        textColor={diceAttributes.textColors["D8"]}
-      />
-    ),
-    [diceAttributes, diceInPlay]
-  );
-
-  const createD10 = useCallback(
-    (radius) => (
-      <D10
-        position={[-6, 3, 5]}
-        key={diceInPlay.length}
-        radius={radius}
-        color={new Color(diceAttributes.colors["D10"])}
-        textColor={diceAttributes.textColors["D10"]}
-      />
-    ),
-    [diceAttributes, diceInPlay]
-  );
-
-  const createD12 = useCallback(
-    (radius) => (
-      <D12
-        position={[1, 3, 5]}
-        key={diceInPlay.length}
-        radius={radius}
-        color={new Color(diceAttributes.colors["D12"])}
-        textColor={diceAttributes.textColors["D12"]}
-      />
-    ),
-    [diceAttributes, diceInPlay]
-  );
-
-  const createD20 = useCallback(
-    (radius) => (
-      <D20
-        position={[-2, 3, -5]}
-        key={diceInPlay.length}
-        radius={radius}
-        color={new Color(diceAttributes.colors["D20"])}
-        textColor={diceAttributes.textColors["D20"]}
-      />
-    ),
-    [diceAttributes, diceInPlay]
+  const createDx = useCallback(
+    (dName, key) => {
+      // use dName o dDie to dTermine dAttribute
+      const Die = diceComponents[dName];
+      return (
+        <Die
+          position={randomSpawnPosition()}
+          key={key}
+          radius={diceAttributes.sizes[dName]}
+          color={new Color(diceAttributes.colors[dName])}
+          textColor={diceAttributes.textColors[dName]}
+        />
+      );
+    },
+    [diceAttributes]
   );
 
   const createDice = useCallback(
-    (listToCreate) => {
-      console.log(diceAttributes);
-      const addedDice = listToCreate.map((item) => {
-        switch (item) {
-          case "D4":
-            return createD4(diceAttributes.sizes.D4);
-          case "D6":
-            return createD6(diceAttributes.sizes.D6);
-          case "D8":
-            return createD8(diceAttributes.sizes.D8);
-          case "D10":
-            return createD10(diceAttributes.sizes.D10);
-          case "D12":
-            return createD12(diceAttributes.sizes.D12);
-          default:
-            return createD20(diceAttributes.sizes.D20);
-        }
-      });
-      setDiceInPlay([...diceInPlay, ...addedDice]);
+    (listToCreate, shouldClear) => {
+      let dice = diceInPlay;
+      if (shouldClear) {
+        dice = [];
+      }
+      const addedDice = listToCreate.map((item, i) =>
+        createDx(item, currentIndex + i)
+      );
+      setDiceInPlay([...dice, ...addedDice]);
+      setCurrentIndex(currentIndex + addedDice.length);
     },
-    [
-      diceAttributes,
-      diceInPlay,
-      createD4,
-      createD6,
-      createD8,
-      createD10,
-      createD12,
-      createD20,
-    ]
+    [diceAttributes, diceInPlay, createDx]
   );
 
   const updateAttributes = useCallback(
@@ -180,7 +116,12 @@ export const DiceProvider = ({ children }) => {
   return (
     <>
       <DiceContext.Provider
-        value={{ createDice, diceAttributes, diceInPlay, updateAttributes }}
+        value={{
+          createDice,
+          diceAttributes,
+          diceInPlay,
+          updateAttributes,
+        }}
       >
         {children}
       </DiceContext.Provider>
