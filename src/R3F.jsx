@@ -3,7 +3,7 @@ import { Physics } from "@react-three/cannon";
 import { OrbitControls, Text } from "@react-three/drei";
 import { Suspense } from "react";
 
-import { useDice } from "./DiceContext";
+import { useDice } from "./contexts/DiceContext";
 
 import TablePlane from "./TablePlane";
 import font from "../assets/hobbitonbrushhand.ttf";

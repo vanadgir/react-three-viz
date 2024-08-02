@@ -10,6 +10,7 @@ import {
   randomAngularVelocity,
   randomRotation,
   randomVelocity,
+  randomSpawnPosition,
 } from "./Vec3Utils";
 import font from "../assets/hobbitonbrushhand.ttf";
 
@@ -79,7 +80,7 @@ const Dx = ({
     setRoll(null);
     setHover(false);
     setLowVelocity(false);
-    api.position.set(...position);
+    api.position.set(...randomSpawnPosition());
     api.rotation.set(...randomRotation());
     api.velocity.set(...randomVelocity());
     api.angularVelocity.set(...randomAngularVelocity());

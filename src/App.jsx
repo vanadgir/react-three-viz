@@ -1,7 +1,7 @@
 import DOM from "./DOM";
 import R3F from "./R3F";
 
-import { DiceProvider } from "./DiceContext";
+import { DiceProvider } from "./contexts/DiceContext";
 
 import "./App.css";
 

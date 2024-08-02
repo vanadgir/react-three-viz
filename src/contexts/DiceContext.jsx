@@ -1,14 +1,14 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import { Color } from "three";
 
-import { randomSpawnPosition } from "./Vec3Utils";
+import { randomSpawnPosition } from "../Vec3Utils";
 
-import D4 from "./D4";
-import D6 from "./D6";
-import D8 from "./D8";
-import D10 from "./D10";
-import D12 from "./D12";
-import D20 from "./D20";
+import D4 from "../D4";
+import D6 from "../D6";
+import D8 from "../D8";
+import D10 from "../D10";
+import D12 from "../D12";
+import D20 from "../D20";
 
 import {
   D4_CONST,
@@ -17,7 +17,7 @@ import {
   D10_CONST,
   D12_CONST,
   D20_CONST,
-} from "./constants";
+} from "../constants";
 
 // create the default context values
 const defaultDiceAttributes = {

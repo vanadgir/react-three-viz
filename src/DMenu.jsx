@@ -1,17 +1,55 @@
+import { useCallback, useState } from "react";
 import { CompactPicker } from "react-color";
 
-import { useDice } from "./DiceContext";
+import { useDice } from "./contexts/DiceContext";
 
 import Slider from "./Slider";
-import { useState } from "react";
+
+const validDice = ["D4", "D6", "D8", "D10", "D12", "D20"];
 
 const DMenu = () => {
   const [selectedD, setSelectedD] = useState(null);
+  const [diceFormula, setDiceFormula] = useState("");
   const { createDice, diceAttributes, updateAttributes } = useDice();
+
+  const parseDiceFormula = useCallback(
+    (e) => {
+      e.preventDefault();
+      const splitFormula = [
+        ...diceFormula.matchAll(new RegExp(/(\d*)[d](\d{1,2})/gm)),
+      ]
+        .filter((group) => validDice.includes(`D${group[2]}`))
+        .reduce((prev, cur) => {
+          const toAdd = new Array(parseInt(cur[1]) || 1)
+            .fill(undefined)
+            .map((e) => {
+              return `D${cur[2]}`;
+            });
+          return [...prev, ...toAdd];
+        }, []);
+
+      if (splitFormula.length) {
+        createDice(splitFormula, true);
+      }
+      setDiceFormula("");
+    },
+    [diceFormula]
+  );
+
   return (
     <div className="dice-menu">
+      <form className="dice-menu-text" onSubmit={parseDiceFormula}>
+        <input
+          type="text"
+          onChange={(e) => setDiceFormula(e.target.value)}
+          value={diceFormula}
+        />
+        <button className="text-submit" type="submit">
+          Submit
+        </button>
+      </form>
       <div className="dice-menu-entries">
-        {["D4", "D6", "D8", "D10", "D12", "D20"].map((diceName) => (
+        {validDice.map((diceName) => (
           <div className="dice-menu-entry">
             <button
               className="spawn-button"
