@@ -12,7 +12,7 @@ import {
   randomVelocity,
   randomSpawnPosition,
 } from "./Vec3Utils";
-import font from "../assets/hobbitonbrushhand.ttf";
+import font from "../public/TypeMachine.ttf";
 
 const Dx = ({
   children,

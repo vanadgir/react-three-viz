@@ -6,7 +6,7 @@ import { Suspense } from "react";
 import { useDice } from "./contexts/DiceContext";
 
 import TablePlane from "./TablePlane";
-import font from "../assets/hobbitonbrushhand.ttf";
+import font from "../public/TypeMachine.ttf";
 
 const R3F = () => {
   const { diceInPlay } = useDice();
