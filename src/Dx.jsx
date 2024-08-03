@@ -97,7 +97,6 @@ const Dx = ({
       const result = CannonUtils.getResult(
         geometry.name,
         ref.current.matrixWorld,
-        api.position,
         centroids
       );
 
@@ -110,7 +109,7 @@ const Dx = ({
       onDieResolve(id, result + 1, resultFudge);
       setRoll(result);
     }
-  }, [api, atRest, diceInPlay, onDieResolve]);
+  }, [api, atRest, centroids, diceInPlay, onDieResolve]);
 
   useEffect(() => {
     // this effect checks the velocity of the die, and if any velocity values are low enough,
