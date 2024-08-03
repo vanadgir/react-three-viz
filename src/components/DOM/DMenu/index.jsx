@@ -10,28 +10,19 @@ import styles from "./DMenu.module.scss";
 const DMenu = () => {
   const [selectedD, setSelectedD] = useState(null);
   const [diceFormula, setDiceFormula] = useState("");
-  const { clearBoard, createDice, diceAttributes, updateAttributes } =
-    useDice();
+  const {
+    clearBoard,
+    createDice,
+    diceAttributes,
+    rerollBoard,
+    submitDiceFormula,
+    updateAttributes,
+  } = useDice();
 
   const parseDiceFormula = useCallback(
     (e) => {
       e.preventDefault();
-      const splitFormula = [
-        ...diceFormula.matchAll(new RegExp(/(\d*)[d|D](\d{1,2})/gm)),
-      ]
-        .filter((group) => validDice.includes(`D${group[2]}`))
-        .reduce((prev, cur) => {
-          const toAdd = new Array(parseInt(cur[1]) || 1)
-            .fill(undefined)
-            .map((e) => {
-              return `D${cur[2]}`;
-            });
-          return [...prev, ...toAdd];
-        }, []);
-
-      if (splitFormula.length) {
-        createDice(splitFormula, true);
-      }
+      submitDiceFormula(diceFormula);
       setDiceFormula("");
     },
     [diceFormula]
@@ -44,9 +35,13 @@ const DMenu = () => {
           type="text"
           onChange={(e) => setDiceFormula(e.target.value)}
           value={diceFormula}
+          placeholder="2d20 + 4d6, etc..."
         />
         <button className={styles.textSubmit} type="submit">
           Submit
+        </button>
+        <button className={styles.rerollButton} onClick={rerollBoard}>
+          Reroll Board
         </button>
         <button className={styles.clearButton} onClick={clearBoard}>
           Clear Board

@@ -2,8 +2,10 @@
   bottom: 0;
   color: white;
   height: 120px;
+  padding: 2px 10px;
   position: absolute;
   top: unset;
+  width: 600px;
 
   @media (max-width:600px)  {
     height: unset;
@@ -11,8 +13,9 @@
   }
 
   p {
-    padding: 2px 10px;
+    box-sizing: border-box;
     font-size: 24px;
     height: 30px;
+    width: 100%;
   }
 }
