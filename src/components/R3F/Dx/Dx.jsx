@@ -11,6 +11,8 @@ import {
   randomRotation,
   randomVelocity,
   randomSpawnPosition,
+  REROLL_INTERVAL,
+  REST_INTERVAL,
   ZEROISH,
 } from "../../../utils";
 import font from "../../../../assets/fonts/TypeMachine.ttf";
@@ -35,7 +37,9 @@ const Dx = ({
   const [lowVelocity, setLowVelocity] = useState(false);
   const [atRest, setAtRest] = useState(false);
   const [roll, setRoll] = useState(null);
-  let interval;
+  const [shouldReset, setShouldReset] = useState(false);
+  let restInterval;
+  let rerollInterval;
 
   const onCollideBegin = useCallback((e) => {
     if (e.body.geometry.type === "PlaneGeometry") {
@@ -81,6 +85,7 @@ const Dx = ({
     setRoll(null);
     setHover(false);
     setLowVelocity(false);
+    setShouldReset(false);
     api.position.set(...randomSpawnPosition());
     api.rotation.set(...randomRotation());
     api.velocity.set(...randomVelocity());
@@ -90,7 +95,7 @@ const Dx = ({
 
   useEffect(() => {
     // onRest needs to be an effect, so the most up-to-date state and context are available
-    // the interval that triggers atRest captures a state from 500ms prior
+    // the restInterval that triggers atRest captures a state from 500ms prior
     if (atRest && !diceInPlay[id].resolved) {
       api.velocity.set(0, 0, 0);
 
@@ -139,15 +144,34 @@ const Dx = ({
 
   useEffect(() => {
     // this effect checks if the die is low velocity and colliding the plane.
-    // if so, then it starts an interval/timer to see if that persists for half a second.
+    // if so, then it starts an restInterval/timer to see if that persists for half a second.
     // if so, sets atRest to true
     if (lowVelocity && collidingPlane && !atRest) {
-      interval = setInterval(() => {
+      restInterval = setInterval(() => {
         setAtRest(true);
-      }, 500);
+      }, REST_INTERVAL);
     }
-    return () => clearInterval(interval);
+    return () => clearInterval(restInterval);
   }, [atRest, collidingPlane, lowVelocity]);
+
+  useEffect(() => {
+    // this effect makes sure that any 'stuck' dice can still resolve, by rerolling
+    // them after a timer
+    if (!atRest) {
+      rerollInterval = setInterval(() => {
+        setShouldReset(true);
+      }, REROLL_INTERVAL);
+    } else {
+      clearInterval(rerollInterval);
+    }
+    return () => clearInterval(rerollInterval);
+  }, [atRest]);
+
+  useEffect(() => {
+    if (shouldReset) {
+      resetRoll();
+    }
+  }, [resetRoll, shouldReset]);
 
   useEffect(() => {
     // when the die first loads, spin it

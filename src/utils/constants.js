@@ -1,5 +1,8 @@
 export const ZEROISH = 0.085;
 
+export const REROLL_INTERVAL = 8000;
+export const REST_INTERVAL = 500;
+
 export const validDice = ["D4", "D6", "D8", "D10", "D12", "D20"];
 
 export const D4_CONST = {
