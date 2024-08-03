@@ -1,13 +1,11 @@
 import { useCallback, useState } from "react";
 import { CompactPicker } from "react-color";
 
-import { useDice } from "./contexts/DiceContext";
-
+import { useDice } from "../../../contexts";
 import Slider from "./Slider";
 
+import { validDice } from "../../../utils";
 import styles from "./DMenu.module.scss";
-
-const validDice = ["D4", "D6", "D8", "D10", "D12", "D20"];
 
 const DMenu = () => {
   const [selectedD, setSelectedD] = useState(null);

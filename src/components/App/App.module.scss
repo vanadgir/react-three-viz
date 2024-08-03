@@ -1,7 +1,4 @@
-@font-face {
-  font-family: "TypeMachine";
-  src: local("TypeMachine"), url("TypeMachine.ttf") format("truetype");
-}
+@import url("../../styles/Fonts.scss");
 
 * {
   background-color: #313338;

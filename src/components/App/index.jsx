@@ -1,7 +1,6 @@
-import DOM from "./DOM";
-import R3F from "./R3F";
-
-import { DiceProvider } from "./contexts/DiceContext";
+import { DiceProvider } from "../../contexts";
+import DOM from "../DOM";
+import R3F from "../R3F";
 
 import "./App.module.scss";
 

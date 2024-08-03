@@ -1,20 +1,24 @@
 import React, { createContext, useContext, useCallback, useMemo } from "react";
-import { AudioLoader, AudioListener, Audio } from "three";
 import { useLoader } from "@react-three/fiber";
+import { AudioLoader, AudioListener, Audio } from "three";
 
-const AudioContext = createContext();
+const AudioContext = createContext({
+  children: [],
+  playContactSFX: (impactVelocity) => undefined,
+  playRollResultSFX: (roll) => undefined,
+});
 const CONTACT_FACTOR = 20;
 const CONTACT_THRESHOLD = 0.0075;
 const CONTACT_DETUNE_RANGE = 300;
 
 export const AudioProvider = ({ children }) => {
-  const maxRollSFXBuffer = useLoader(AudioLoader, `../../assets/wahoo.wav`);
-  const minRollSFXBuffer = useLoader(AudioLoader, `../../assets/nooo.wav`);
+  const maxRollSFXBuffer = useLoader(AudioLoader, `../../assets/audio/wahoo.wav`);
+  const minRollSFXBuffer = useLoader(AudioLoader, `../../assets/audio/nooo.wav`);
   const neutralRollSFXBuffer = useLoader(
     AudioLoader,
-    `../../assets/neutral.mp3`
+    `../../assets/audio/neutral.mp3`
   );
-  const contactSFXBuffer = useLoader(AudioLoader, "../../assets/dice.wav");
+  const contactSFXBuffer = useLoader(AudioLoader, "../../assets/audio/dice.wav");
 
   const listener = useMemo(() => new AudioListener(), []);
 
@@ -77,7 +81,7 @@ export const AudioProvider = ({ children }) => {
   );
 
   return (
-    <AudioContext.Provider value={{ playRollResultSFX, playContactSFX }}>
+    <AudioContext.Provider value={{ playContactSFX, playRollResultSFX }}>
       {children}
     </AudioContext.Provider>
   );

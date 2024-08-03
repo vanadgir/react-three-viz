@@ -3,7 +3,7 @@ import { IcosahedronGeometry } from "three";
 
 import Dx from "./Dx";
 
-import { D20_CONST } from "./constants";
+import { D20_CONST } from "../../../utils";
 
 // check createDx in DiceContext for prop definition
 const D20 = (props) => {

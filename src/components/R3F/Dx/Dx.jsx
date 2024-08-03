@@ -1,19 +1,19 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useConvexPolyhedron } from "@react-three/cannon";
 import { Text } from "@react-three/drei";
 import { Color } from "three";
-import { useConvexPolyhedron } from "@react-three/cannon";
 
-import { useAudio } from "./contexts/AudioContext";
-import { useDice } from "./contexts/DiceContext";
-import { ZEROISH } from "./constants";
-import CannonUtils from "./CannonUtils";
+import { useAudio, useDice } from "../../../contexts";
+
 import {
+  CannonUtils,
   randomAngularVelocity,
   randomRotation,
   randomVelocity,
   randomSpawnPosition,
-} from "./Vec3Utils";
-import font from "../public/TypeMachine.ttf";
+  ZEROISH,
+} from "../../../utils";
+import font from "../../../../assets/fonts/TypeMachine.ttf";
 
 const Dx = ({
   id,

@@ -3,7 +3,7 @@ import { TetrahedronGeometry } from "three";
 
 import Dx from "./Dx";
 
-import { D4_CONST } from "./constants";
+import { D4_CONST } from "../../../utils";
 
 // check createDx in DiceContext for prop definition
 const D4 = (props) => {
