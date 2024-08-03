@@ -105,6 +105,19 @@
         }
       }
     }
+
+    .results {
+      position: absolute;
+      bottom: 0;
+      height: 100px;
+
+      color: white;
+
+      p {
+        font-size: 24px;
+        height: 30px;
+      }
+    }
   }
 }
 

@@ -45,12 +45,13 @@ export const AudioProvider = ({ children }) => {
     [listener, maxRollSFXBuffer, minRollSFXBuffer, neutralRollSFXBuffer]
   );
 
-  const createRollResultSFX = useCallback(() => {
-    return (roll) => {
+  const playRollResultSFX = useCallback(
+    (roll) => {
       const selectedAudio = allRollResultSFX[roll] || allRollResultSFX.neutral;
       selectedAudio.play();
-    };
-  }, [allRollResultSFX]);
+    },
+    [allRollResultSFX]
+  );
 
   const playContactSFX = useCallback(
     (impactVelocity) => {
@@ -76,7 +77,7 @@ export const AudioProvider = ({ children }) => {
   );
 
   return (
-    <AudioContext.Provider value={{ createRollResultSFX, playContactSFX }}>
+    <AudioContext.Provider value={{ playRollResultSFX, playContactSFX }}>
       {children}
     </AudioContext.Provider>
   );

@@ -4,6 +4,7 @@ import { Color } from "three";
 import { useConvexPolyhedron } from "@react-three/cannon";
 
 import { useAudio } from "./contexts/AudioContext";
+import { useDice } from "./contexts/DiceContext";
 import { ZEROISH } from "./constants";
 import CannonUtils from "./CannonUtils";
 import {
@@ -26,16 +27,15 @@ const Dx = ({
   color,
   textColor,
 }) => {
+  const { playContactSFX } = useAudio();
+  const { diceInPlay, onDieResolve, resetDie } = useDice();
   const [collidingPlane, setCollidingPlane] = useState(false);
   const [lastContactId, setLastContactId] = useState(null);
   const [hovered, setHover] = useState(false);
   const [lowVelocity, setLowVelocity] = useState(false);
   const [atRest, setAtRest] = useState(false);
   const [roll, setRoll] = useState(null);
-  const { createRollResultSFX, playContactSFX } = useAudio();
   let interval;
-
-  const rollResultSFX = createRollResultSFX();
 
   const onCollideBegin = useCallback((e) => {
     if (e.body.geometry.type === "PlaneGeometry") {
@@ -85,31 +85,32 @@ const Dx = ({
     api.rotation.set(...randomRotation());
     api.velocity.set(...randomVelocity());
     api.angularVelocity.set(...randomAngularVelocity());
-  }, [api]);
+    resetDie(id);
+  }, [api, resetDie]);
 
-  const onRest = useCallback(() => {
-    setAtRest(true);
-    api.velocity.set(0, 0, 0);
+  useEffect(() => {
+    // onRest needs to be an effect, so the most up-to-date state and context are available
+    // the interval that triggers atRest captures a state from 500ms prior
+    if (atRest && !diceInPlay[id].resolved) {
+      api.velocity.set(0, 0, 0);
 
-    const result = CannonUtils.getResult(
-      geometry.name,
-      ref.current.matrixWorld,
-      api.position,
-      centroids
-    );
+      const result = CannonUtils.getResult(
+        geometry.name,
+        ref.current.matrixWorld,
+        api.position,
+        centroids
+      );
 
-    setRoll(result);
-
-    if (result === 0) {
-      rollResultSFX("min");
-    } else if (result === centroids.length - 1) {
-      rollResultSFX("max");
-    } else {
-      rollResultSFX();
+      const resultFudge =
+        result === 0
+          ? "min"
+          : result === centroids.length - 1
+          ? "max"
+          : "neutral";
+      onDieResolve(id, result + 1, resultFudge);
+      setRoll(result);
     }
-
-    // console.log(`${geometry.name}: You have rolled ${result + 1}!`);
-  }, [api]);
+  }, [api, atRest, diceInPlay, onDieResolve]);
 
   useEffect(() => {
     // this effect checks the velocity of the die, and if any velocity values are low enough,
@@ -143,7 +144,7 @@ const Dx = ({
     // if so, sets atRest to true
     if (lowVelocity && collidingPlane && !atRest) {
       interval = setInterval(() => {
-        onRest();
+        setAtRest(true);
       }, 500);
     }
     return () => clearInterval(interval);
