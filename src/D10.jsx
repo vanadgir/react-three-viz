@@ -1,13 +1,12 @@
-import { useConvexPolyhedron } from "@react-three/cannon";
 import { useMemo } from "react";
 import { PolyhedronGeometry } from "three";
 
 import Dx from "./Dx";
 
-import CannonUtils from "./CannonUtils";
 import { D10_CONST } from "./constants";
 
-const D10 = ({ position, color }) => {
+// check createDx in DiceContext for prop definition
+const D10 = (props) => {
   const geometryArgs = useMemo(() => {
     const sides = 10;
     const vertices = [
@@ -59,7 +58,7 @@ const D10 = ({ position, color }) => {
     const retVal = new PolyhedronGeometry(
       geometryArgs[0],
       geometryArgs[1],
-      D10_CONST.RADIUS,
+      props.radius,
       0
     );
     retVal.name = D10_CONST.NAME;
@@ -68,8 +67,8 @@ const D10 = ({ position, color }) => {
   }, [geometryArgs]);
 
   return (
-    <Dx geometry={geometry} position={position} color={color}>
-      <polyhedronGeometry args={[...geometryArgs, D10_CONST.RADIUS, 0]} />
+    <Dx {...props} geometry={geometry}>
+      <polyhedronGeometry args={[...geometryArgs, props.radius, 0]} />
     </Dx>
   );
 };

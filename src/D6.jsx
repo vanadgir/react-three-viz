@@ -5,7 +5,8 @@ import Dx from "./Dx";
 
 import { D6_CONST } from "./constants";
 
-const D6 = ({ position, color }) => {
+// check createDx in DiceContext for prop definition
+const D6 = (props) => {
   const geometryArgs = useMemo(() => {
     // const sides = 6;
     const vertices = [
@@ -47,7 +48,7 @@ const D6 = ({ position, color }) => {
     const retVal = new PolyhedronGeometry(
       geometryArgs[0],
       geometryArgs[1],
-      D6.RADIUS,
+      props.radius,
       0
     );
     retVal.name = D6_CONST.NAME;
@@ -56,8 +57,8 @@ const D6 = ({ position, color }) => {
   }, [geometryArgs]);
 
   return (
-    <Dx geometry={geometry} position={position} color={color}>
-      <polyhedronGeometry args={[...geometryArgs, D6_CONST.RADIUS, 0]} />
+    <Dx {...props} geometry={geometry}>
+      <polyhedronGeometry args={[...geometryArgs, props.radius, 0]} />
     </Dx>
   );
 };

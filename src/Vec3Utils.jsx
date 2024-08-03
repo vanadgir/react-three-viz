@@ -17,3 +17,11 @@ export const randomAngularVelocity = () => {
     Math.random() * 20 - 10,
   ];
 };
+
+export const randomSpawnPosition = () => {
+  return [
+    Math.random() * 10 - 6,
+    Math.random() * 7 + 3,
+    Math.random() * 10 - 6,
+  ];
+};

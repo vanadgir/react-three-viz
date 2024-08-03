@@ -82,9 +82,6 @@ class CannonUtils {
   // also include some overrideable defaults
   static toConvexPolyhedronProps(
     geometry,
-    setCollidingPlane,
-    lastContactId,
-    setLastContactId,
     position = [0, 0, 0],
     mass = 1,
     restitution = 0.8,
@@ -97,24 +94,9 @@ class CannonUtils {
       mass,
       position,
       restitution,
-      onCollideBegin: (e) => {
-        if (e.body.geometry.type === "PlaneGeometry") {
-          onCollideBegin(e);
-          setCollidingPlane(true);
-        }
-      },
-      onCollide: (e) => {
-        if (lastContactId !== e.contact.id) {
-          onCollide(e);
-          setLastContactId(e.contact.id);
-        }
-      },
-      onCollideEnd: (e) => {
-        if (e.body.geometry.type === "PlaneGeometry") {
-          onCollideEnd(e);
-          setCollidingPlane(false);
-        }
-      },
+      onCollideBegin,
+      onCollide,
+      onCollideEnd,
     };
   }
 
