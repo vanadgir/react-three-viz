@@ -1,0 +1,56 @@
+input[type="range"] {
+  background-color: transparent;
+
+  &::-webkit-slider- {
+    &thumb {
+      -webkit-appearance: none;
+      height: 16px;
+      width: 16px;
+      border-radius: 50%;
+      color: red;
+      background: red;
+      cursor: pointer;
+      box-shadow: 0 0 2px 0 #555;
+      transition: background 0.3s ease-in-out;
+
+      &:hover {
+        box-shadow: #d46a6a50 0px 0px 0px 8px;
+      }
+
+      &:active {
+        box-shadow: #d46a6a50 0px 0px 0px 11px;
+        transition: box-shadow 350ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+          left 350ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+          bottom 350ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      }
+    }
+
+    &runnable-track {
+      -webkit-appearance: none;
+      box-shadow: none;
+      border: none;
+      background: transparent;
+      color: red;
+    }
+  }
+
+  /** FF*/
+  &::-moz-range- {
+    &progress {
+      background-color: transparent;
+    }
+    &track {
+      background-color: #313338;
+    }
+  }
+
+  /* IE*/
+  &::-ms-fill- {
+    &lower {
+      background-color: red;
+    }
+    &upper {
+      background-color: #313338;
+    }
+  }
+}

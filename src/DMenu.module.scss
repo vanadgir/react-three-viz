@@ -1,0 +1,98 @@
+.diceMenu {
+  background: transparent;
+  height: fit-content;
+  max-width: 100vw;
+  padding-top: 16px;
+  width: 600px;
+
+  .diceMenuText {
+    display: flex;
+    height: 40px;
+    pointer-events: all;
+    width: 100%;
+
+    input[type="text"] {
+      box-sizing: border-box;
+      font-size: 36px;
+      max-height: 100%;
+      width: 90%;
+    }
+
+    button {
+      height: 100%;
+      line-height: 14px;
+      width: 10%;
+    }
+
+    button.clearButton {
+      background-color: red;
+    }
+  }
+
+  .diceMenuEntries {
+    background: transparent;
+    display: flex;
+    height: fit-content;
+    pointer-events: all;
+    width: 100%;
+
+    .diceMenuEntry {
+      background: transparent;
+      height: fit-content;
+      width: 100px;
+
+      .spawnButton {
+        color: red;
+        font-size: 32px;
+        height: 60px;
+        width: 100%;
+      }
+
+      .menuButton {
+        height: 30px;
+      }
+
+      .menuButton.active {
+        background-color: aquamarine;
+      }
+    }
+  }
+
+  .diceMenuEdit {
+    height: fit-content;
+    pointer-events: all;
+    width: fit-content;
+
+    p {
+      height: fit-content;
+      margin: auto;
+      padding: 0 8px;
+      text-align: left;
+      font-weight: 1000;
+    }
+
+    .diceTitle {
+      display: flex;
+    }
+
+    .slider {
+      display: flex;
+      height: 30px;
+      max-width: 98%;
+
+      input {
+        margin: 2px;
+      }
+    }
+
+    .colorWrapper {
+      height: 100px;
+      overflow: hidden;
+
+      p {
+        margin: 0 auto 0 0;
+        width: 50%;
+      }
+    }
+  }
+}

@@ -5,6 +5,8 @@ import { useDice } from "./contexts/DiceContext";
 
 import Slider from "./Slider";
 
+import styles from "./DMenu.module.scss";
+
 const validDice = ["D4", "D6", "D8", "D10", "D12", "D20"];
 
 const DMenu = () => {
@@ -38,25 +40,25 @@ const DMenu = () => {
   );
 
   return (
-    <div className="dice-menu">
-      <form className="dice-menu-text" onSubmit={parseDiceFormula}>
+    <div className={styles.diceMenu}>
+      <form className={styles.diceMenuText} onSubmit={parseDiceFormula}>
         <input
           type="text"
           onChange={(e) => setDiceFormula(e.target.value)}
           value={diceFormula}
         />
-        <button className="text-submit" type="submit">
+        <button className={styles.textSubmit} type="submit">
           Submit
         </button>
-        <button className="clear-button" onClick={clearBoard}>
+        <button className={styles.clearButton} onClick={clearBoard}>
           Clear Board
         </button>
       </form>
-      <div className="dice-menu-entries">
+      <div className={styles.diceMenuEntries}>
         {validDice.map((diceName) => (
-          <div className="dice-menu-entry">
+          <div className={styles.diceMenuEntry} key={`${diceName}-menu`}>
             <button
-              className="spawn-button"
+              className={styles.spawnButton}
               onClick={() => createDice([diceName])}
               style={{
                 backgroundColor: diceAttributes.colors[diceName],
@@ -66,7 +68,9 @@ const DMenu = () => {
               {diceName}
             </button>
             <button
-              className={`menu-button ${diceName === selectedD && "active"}`}
+              className={`${styles.menuButton} ${
+                diceName === selectedD && styles.active
+              }`}
               onClick={() => {
                 if (selectedD !== diceName) {
                   setSelectedD(diceName);
@@ -81,13 +85,13 @@ const DMenu = () => {
         ))}
       </div>
       {selectedD && (
-        <div className="dice-menu-edit">
-          <div className="dice-title">
+        <div className={styles.diceMenuEdit}>
+          <div className={styles.diceTitle}>
             <p>Dice</p>
             <p>{selectedD}</p>
           </div>
           <Slider
-            className="slider"
+            className={styles.slider}
             label="Size"
             max={3}
             update={(value) => {
@@ -95,7 +99,7 @@ const DMenu = () => {
             }}
             value={diceAttributes?.sizes[selectedD]}
           />
-          <div className="color-wrapper">
+          <div className={styles.colorWrapper}>
             <p>Color</p>
             <CompactPicker
               onChangeComplete={(color) => {
@@ -103,7 +107,7 @@ const DMenu = () => {
               }}
             />
           </div>
-          <div className="color-wrapper">
+          <div className={styles.colorWrapper}>
             <p>Text Color</p>
             <CompactPicker
               onChangeComplete={(color) => {

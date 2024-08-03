@@ -3,7 +3,7 @@ import R3F from "./R3F";
 
 import { DiceProvider } from "./contexts/DiceContext";
 
-import "./App.css";
+import "./App.module.scss";
 
 const App = () => {
   return (
