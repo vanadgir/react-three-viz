@@ -13,6 +13,7 @@
     width: 100vw;
 
     .dice-menu {
+      padding-top: 16px;
       background: transparent;
       height: fit-content;
       max-width: 100vw;

@@ -73,7 +73,7 @@ const Dx = ({
     () => CannonUtils.getCentroids(geometry),
     [geometry]
   );
-  const vertices = useMemo(() => CannonUtils.getVertices(geometry), [geometry]);
+  // const vertices = useMemo(() => CannonUtils.getVertices(geometry), [geometry]);
   const normals = useMemo(() => CannonUtils.getNormals(geometry), [geometry]);
 
   const resetRoll = useCallback(() => {
