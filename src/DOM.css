@@ -32,9 +32,14 @@
           width: 90%;
         }
 
-        button.text-submit {
+        button {
           height: 100%;
+          line-height: 14px;
           width: 10%;
+        }
+
+        button.clear-button {
+          background-color: red;
         }
       }
 

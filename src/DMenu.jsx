@@ -10,7 +10,8 @@ const validDice = ["D4", "D6", "D8", "D10", "D12", "D20"];
 const DMenu = () => {
   const [selectedD, setSelectedD] = useState(null);
   const [diceFormula, setDiceFormula] = useState("");
-  const { createDice, diceAttributes, updateAttributes } = useDice();
+  const { clearBoard, createDice, diceAttributes, updateAttributes } =
+    useDice();
 
   const parseDiceFormula = useCallback(
     (e) => {
@@ -46,6 +47,9 @@ const DMenu = () => {
         />
         <button className="text-submit" type="submit">
           Submit
+        </button>
+        <button className="clear-button" onClick={clearBoard}>
+          Clear Board
         </button>
       </form>
       <div className="dice-menu-entries">

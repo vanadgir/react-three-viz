@@ -132,6 +132,11 @@ export const DiceProvider = ({ children }) => {
     [diceInPlay]
   );
 
+  const clearBoard = useCallback(() => {
+    setDiceInPlay({});
+    setCurrentIndex(0);
+  }, []);
+
   const createDx = useCallback(
     (dName, key) => {
       // use dName o dDie to dTermine dAttribute
@@ -188,6 +193,7 @@ export const DiceProvider = ({ children }) => {
     <>
       <DiceContext.Provider
         value={{
+          clearBoard,
           createDice,
           diceAttributes,
           diceCounts,
