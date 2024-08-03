@@ -17,7 +17,7 @@ const DMenu = () => {
     (e) => {
       e.preventDefault();
       const splitFormula = [
-        ...diceFormula.matchAll(new RegExp(/(\d*)[d](\d{1,2})/gm)),
+        ...diceFormula.matchAll(new RegExp(/(\d*)[d|D](\d{1,2})/gm)),
       ]
         .filter((group) => validDice.includes(`D${group[2]}`))
         .reduce((prev, cur) => {
