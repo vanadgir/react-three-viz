@@ -1,0 +1,18 @@
+.results {
+  bottom: 0;
+  color: white;
+  height: 120px;
+  position: absolute;
+  top: unset;
+
+  @media (max-width:600px)  {
+    height: unset;
+    top: 70vh;
+  }
+
+  p {
+    padding: 2px 10px;
+    font-size: 24px;
+    height: 30px;
+  }
+}

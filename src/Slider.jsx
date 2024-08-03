@@ -1,3 +1,5 @@
+import "./Slider.module.scss";
+
 const Slider = ({ className, label, max, update, value }) => {
   return (
     <div className={className}>

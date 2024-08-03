@@ -1,4 +1,5 @@
 import { useDice } from "./contexts/DiceContext";
+import styles from "./Results.module.scss";
 
 const Results = () => {
   const { diceCounts } = useDice();
@@ -22,7 +23,7 @@ const Results = () => {
   );
 
   return (
-    <div className="results">
+    <div className={styles.results}>
       <p>
         Dice in Play: {diceCounts.total} ({diceCounts.resolved} /{" "}
         {diceCounts.total} resolved)

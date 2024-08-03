@@ -1,0 +1,17 @@
+.DOM {
+  display: inline;
+  pointer-events: none;
+  position: relative;
+  touch-action: manipulation;
+  z-index: 1;
+
+  .UI {
+    background: transparent;
+    height: 100vh;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100vw;
+  }
+}

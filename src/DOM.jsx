@@ -1,7 +1,7 @@
 import DMenu from "./DMenu";
 import Results from "./Results";
 
-import "./DOM.css";
+import "./DOM.scss";
 
 const DOM = () => {
   return (
