@@ -1,12 +1,12 @@
-import { Canvas } from "@react-three/fiber";
+import { Suspense } from "react";
 import { Physics } from "@react-three/cannon";
 import { OrbitControls, Text } from "@react-three/drei";
-import { Suspense } from "react";
+import { Canvas } from "@react-three/fiber";
 
-import { useDice } from "./contexts/DiceContext";
-
+import { useDice } from "../../contexts";
 import TablePlane from "./TablePlane";
-import font from "../public/TypeMachine.ttf";
+
+import font from "../../../assets/fonts/TypeMachine.ttf";
 
 const R3F = () => {
   const { diceInPlay } = useDice();

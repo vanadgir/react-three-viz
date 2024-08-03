@@ -1,6 +1,6 @@
-import { useLoader } from "@react-three/fiber";
+import { TextureLoader } from "three";
 import { usePlane } from "@react-three/cannon";
-import * as THREE from "three";
+import { useLoader } from "@react-three/fiber";
 
 const TablePlane = () => {
   const [ref] = usePlane(() => ({
@@ -8,7 +8,7 @@ const TablePlane = () => {
     position: [0, -3, 0],
     restitution: 0.5,
   }));
-  const texture = useLoader(THREE.TextureLoader, "../assets/table.jpg");
+  const texture = useLoader(TextureLoader, "../assets/textures/table.jpg");
 
   return (
     <mesh ref={ref} receiveShadow>

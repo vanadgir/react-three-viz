@@ -1,4 +1,4 @@
-import { useDice } from "./contexts/DiceContext";
+import { useDice } from "../../contexts/DiceContext";
 import styles from "./Results.module.scss";
 
 const Results = () => {

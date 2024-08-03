@@ -3,7 +3,7 @@ import { DodecahedronGeometry } from "three";
 
 import Dx from "./Dx";
 
-import { D12_CONST } from "./constants";
+import { D12_CONST } from "../../../utils";
 
 // check createDx in DiceContext for prop definition
 const D12 = (props) => {

@@ -2,7 +2,7 @@
 // Copyright (c) 2022, 2023, 2024 Sean Bradley
 // Based on https://sbcode.net/threejs/physics-cannonDebugrenderer/#srcclientutilscannonutilsts
 
-import * as THREE from "three";
+import { Quaternion, Vector3 } from "three";
 
 class CannonUtils {
   // turns mesh information into physics compatible format
@@ -11,7 +11,7 @@ class CannonUtils {
     const normal = geometry.attributes.normal;
     const vertices = [];
     for (let i = 0; i < position.count; i++) {
-      vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
+      vertices.push(new Vector3().fromBufferAttribute(position, i));
     }
     const faces = [];
     for (let i = 0; i < position.count; i += 3) {
@@ -19,9 +19,9 @@ class CannonUtils {
         normal === undefined
           ? []
           : [
-              new THREE.Vector3().fromBufferAttribute(normal, i),
-              new THREE.Vector3().fromBufferAttribute(normal, i + 1),
-              new THREE.Vector3().fromBufferAttribute(normal, i + 2),
+              new Vector3().fromBufferAttribute(normal, i),
+              new Vector3().fromBufferAttribute(normal, i + 1),
+              new Vector3().fromBufferAttribute(normal, i + 2),
             ];
       const face = {
         a: i,
@@ -106,7 +106,7 @@ class CannonUtils {
     for (let i = 0; i < vectors.length; i += groupSize) {
       const group = vectors.slice(i, i + groupSize);
       const average = group
-        .reduce((acc, vec) => acc.add(vec), new THREE.Vector3())
+        .reduce((acc, vec) => acc.add(vec), new Vector3())
         .divideScalar(group.length);
       averages.push(average);
     }
@@ -120,7 +120,7 @@ class CannonUtils {
 
     const vertices = [];
     for (let i = 0; i < position.count; i++) {
-      vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
+      vertices.push(new Vector3().fromBufferAttribute(position, i));
     }
 
     const centroids = [];
@@ -129,7 +129,7 @@ class CannonUtils {
       const b = vertices[i + 1];
       const c = vertices[i + 2];
 
-      const centroid = new THREE.Vector3(
+      const centroid = new Vector3(
         (a.x + b.x + c.x) / 3,
         (a.y + b.y + c.y) / 3,
         (a.z + b.z + c.z) / 3
@@ -151,7 +151,7 @@ class CannonUtils {
     const position = geometry.attributes.position;
     const vertices = [];
     for (let i = 0; i < position.count; i++) {
-      vertices.push(new THREE.Vector3().fromBufferAttribute(position, i));
+      vertices.push(new Vector3().fromBufferAttribute(position, i));
     }
 
     return vertices;
@@ -162,12 +162,12 @@ class CannonUtils {
     const position = geometry.attributes.position;
     const normals = [];
     for (let i = 0; i < position.count; i += 3) {
-      const a = new THREE.Vector3().fromBufferAttribute(position, i);
-      const b = new THREE.Vector3().fromBufferAttribute(position, i + 1);
-      const c = new THREE.Vector3().fromBufferAttribute(position, i + 2);
-      const normal = new THREE.Vector3()
+      const a = new Vector3().fromBufferAttribute(position, i);
+      const b = new Vector3().fromBufferAttribute(position, i + 1);
+      const c = new Vector3().fromBufferAttribute(position, i + 2);
+      const normal = new Vector3()
         .subVectors(b, a)
-        .cross(new THREE.Vector3().subVectors(c, a))
+        .cross(new Vector3().subVectors(c, a))
         .normalize();
       normals.push(normal);
     }
@@ -183,23 +183,23 @@ class CannonUtils {
 
   // returns a quaternion that can rotate a component to lay flat on its face
   static calculateFaceQuaternion(faceNormal) {
-    const quaternion = new THREE.Quaternion();
-    quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), faceNormal);
+    const quaternion = new Quaternion();
+    quaternion.setFromUnitVectors(new Vector3(0, 0, 1), faceNormal);
     return quaternion;
   }
 
   // returns the roll result by calculating dot product (a • b)
   // where a = (center - centroid) and b = up
   static getResult(name, mat, centroids) {
-    const worldCenter = new THREE.Vector3(0, 0, 0).applyMatrix4(mat);
+    const worldCenter = new Vector3(0, 0, 0).applyMatrix4(mat);
     const trueVertical =
-      name === "D4" ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
+      name === "D4" ? new Vector3(0, -1, 0) : new Vector3(0, 1, 0);
     let largestDotProd = -Infinity;
     let result;
 
     centroids.map((c, index) => {
-      const worldPosition = new THREE.Vector3(c.x, c.y, c.z).applyMatrix4(mat);
-      const direction = new THREE.Vector3()
+      const worldPosition = new Vector3(c.x, c.y, c.z).applyMatrix4(mat);
+      const direction = new Vector3()
         .subVectors(worldPosition, worldCenter)
         .normalize();
       const dotProd = direction.dot(trueVertical);
