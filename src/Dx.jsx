@@ -15,6 +15,7 @@ import {
 import font from "../public/TypeMachine.ttf";
 
 const Dx = ({
+  id,
   children,
   inertiaMod,
   geometry,

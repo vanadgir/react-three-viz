@@ -28,7 +28,7 @@ const R3F = () => {
         <Suspense>
           <TablePlane />
         </Suspense>
-        {diceInPlay}
+        {Object.keys(diceInPlay).map((d) => diceInPlay[d]?.component)}
       </Physics>
       <OrbitControls />
       {/* HACK(tb): for some stupid reason, Text needs to be prewarmed */}

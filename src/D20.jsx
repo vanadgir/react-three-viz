@@ -5,7 +5,8 @@ import Dx from "./Dx";
 
 import { D20_CONST } from "./constants";
 
-const D20 = (props = { position, radius, color, textColor }) => {
+// check createDx in DiceContext for prop definition
+const D20 = (props) => {
   const geometry = useMemo(() => {
     const retVal = new IcosahedronGeometry(props.radius, 0);
     retVal.name = D20_CONST.NAME;

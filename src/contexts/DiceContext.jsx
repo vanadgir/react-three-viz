@@ -69,21 +69,27 @@ export const DiceContext = createContext({
 export const DiceProvider = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [diceAttributes, setDiceAttributes] = useState(defaultDiceAttributes);
-  const [diceInPlay, setDiceInPlay] = useState([]);
+  const [diceInPlay, setDiceInPlay] = useState({});
 
   const createDx = useCallback(
     (dName, key) => {
       // use dName o dDie to dTermine dAttribute
-      const Die = diceComponents[dName];
-      return (
-        <Die
+      const D = diceComponents[dName];
+      return {
+        component: (
+          <D
+            id={key}
           position={randomSpawnPosition()}
           key={key}
           radius={diceAttributes.sizes[dName]}
           color={new Color(diceAttributes.colors[dName])}
           textColor={diceAttributes.textColors[dName]}
         />
-      );
+        ),
+        name: dName,
+        resolved: false,
+        resolveValue: 0,
+      };
     },
     [diceAttributes]
   );
@@ -92,15 +98,19 @@ export const DiceProvider = ({ children }) => {
     (listToCreate, shouldClear) => {
       let dice = diceInPlay;
       if (shouldClear) {
-        dice = [];
+        dice = {};
       }
-      const addedDice = listToCreate.map((item, i) =>
-        createDx(item, currentIndex + i)
+      const addedDice = listToCreate.reduce(
+        (prev, cur, i) => ({
+          ...prev,
+          [currentIndex + i]: createDx(cur, currentIndex + i),
+        }),
+        {}
       );
-      setDiceInPlay([...dice, ...addedDice]);
-      setCurrentIndex(currentIndex + addedDice.length);
+      setDiceInPlay({ ...dice, ...addedDice });
+      setCurrentIndex(currentIndex + listToCreate.length);
     },
-    [diceAttributes, diceInPlay, createDx]
+    [currentIndex, diceAttributes, diceInPlay, createDx]
   );
 
   const updateAttributes = useCallback(

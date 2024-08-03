@@ -5,7 +5,8 @@ import Dx from "./Dx";
 
 import { D8_CONST } from "./constants";
 
-const D8 = (props = { position, radius, color, textColor }) => {
+// check createDx in DiceContext for prop definition
+const D8 = (props) => {
   const geometry = useMemo(() => {
     const retVal = new OctahedronGeometry(props.radius, 0);
     retVal.name = D8_CONST.NAME;

@@ -5,7 +5,8 @@ import Dx from "./Dx";
 
 import { D10_CONST } from "./constants";
 
-const D10 = (props = { position, radius, color, textColor }) => {
+// check createDx in DiceContext for prop definition
+const D10 = (props) => {
   const geometryArgs = useMemo(() => {
     const sides = 10;
     const vertices = [
