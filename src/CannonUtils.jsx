@@ -190,8 +190,8 @@ class CannonUtils {
 
   // returns the roll result by calculating dot product (a • b)
   // where a = (center - centroid) and b = up
-  static getResult(name, mat, center, centroids) {
-    const worldCenter = new THREE.Vector3(center.x, center.y, center.z);
+  static getResult(name, mat, centroids) {
+    const worldCenter = new THREE.Vector3(0, 0, 0).applyMatrix4(mat);
     const trueVertical =
       name === "D4" ? new THREE.Vector3(0, -1, 0) : new THREE.Vector3(0, 1, 0);
     let largestDotProd = -Infinity;
