@@ -33,7 +33,7 @@ export const AudioProvider = ({ children }) => {
   const neutralRollSFXBuffer = useLoader(AudioLoader, neutral);
   const contactSFXBuffer = useLoader(AudioLoader, dice);
 
-  const listener = useMemo(() => new AudioListener(), []);
+  const sfxListener = useMemo(() => new AudioListener(), []);
 
   const allRollResultSFX = useMemo(
     () => ({
