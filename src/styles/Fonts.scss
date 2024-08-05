@@ -1,4 +1,4 @@
 @font-face {
   font-family: "TypeMachine";
-  src: local("TypeMachine"), url("assets/TypeMachine.ttf") format("truetype");
+  src: local("TypeMachine"), url(@/TypeMachine.ttf) format("truetype");
 }
