@@ -31,7 +31,13 @@
     }
   }
 
-  .volumeSlider {
+  .trackDuration{
+    text-align: center;
+    max-width: 100px;
+  }
+
+  .volumeButtons{
+    display: flex;
     max-width: 100px;
   }
 }

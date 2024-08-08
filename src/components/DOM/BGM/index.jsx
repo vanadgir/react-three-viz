@@ -3,7 +3,20 @@ import { useAudio } from "../../../contexts";
 import styles from "./BGM.module.scss";
 
 const BGM = () => {
-  const { togglePlayback, nextTrack, changeVolume } = useAudio();
+  const {
+    togglePlayback,
+    nextTrack,
+    changeVolume,
+    playFromPosition,
+    playbackPosition,
+    trackDuration,
+  } = useAudio();
+
+  const convertTime = (time) => {
+    const minutes = `${Math.floor(time / 60)}`;
+    const seconds = `${Math.floor(time % 60)}`.padStart(2, 0);
+    return `${minutes}:${seconds}`;
+  };
 
   return (
     <div className={styles.bgmMenu}>
@@ -20,14 +33,21 @@ const BGM = () => {
         ></input>
       </span>
       <input
-        className={styles.volumeSlider}
+        className={styles.trackProgress}
         type="range"
         min={0}
-        max={1}
-        step={0.01}
-        defaultValue={0.5}
-        onChange={(e) => changeVolume(parseFloat(e.target.value))}
+        max={trackDuration}
+        step={0.1}
+        value={playbackPosition}
+        onChange={(e) => playFromPosition(parseFloat(e.target.value))}
       ></input>
+      <span className={styles.trackDuration}>
+        {convertTime(playbackPosition)} / {convertTime(trackDuration)}
+      </span>
+      <span className={styles.volumeButtons}>
+        <button onClick={() => changeVolume(-0.05)}>-</button>
+        <button onClick={() => changeVolume(0.05)}>+</button>
+      </span>
     </div>
   );
 };

@@ -24,10 +24,22 @@ const CONTACT_DETUNE_RANGE = 300;
 
 export const AudioProvider = ({ children }) => {
   // BEGIN SFX LOGIC
-  const maxRollSFXBuffer = useLoader(AudioLoader, `../../assets/audio/wahoo.wav`);
-  const minRollSFXBuffer = useLoader(AudioLoader, `../../assets/audio/nooo.wav`);
-  const neutralRollSFXBuffer = useLoader(AudioLoader, `../../assets/audio/neutral.mp3`);
-  const contactSFXBuffer = useLoader(AudioLoader, "../../assets/audio/dice.wav");
+  const maxRollSFXBuffer = useLoader(
+    AudioLoader,
+    `../../assets/audio/wahoo.wav`
+  );
+  const minRollSFXBuffer = useLoader(
+    AudioLoader,
+    `../../assets/audio/nooo.wav`
+  );
+  const neutralRollSFXBuffer = useLoader(
+    AudioLoader,
+    `../../assets/audio/neutral.mp3`
+  );
+  const contactSFXBuffer = useLoader(
+    AudioLoader,
+    "../../assets/audio/dice.wav"
+  );
   const sfxListener = useMemo(() => new AudioListener(), []);
 
   const allRollResultSFX = useMemo(
@@ -93,8 +105,9 @@ export const AudioProvider = ({ children }) => {
   const bgmBuffersRef = useRef([]);
   const bgmAudioRef = useRef(new Audio(new AudioListener()));
   const [bgmLoaded, setBGMLoaded] = useState(false);
-  const [bgmVolume, setBGMVolume] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [playbackPosition, setPlaybackPosition] = useState(0);
+  const [trackDuration, setTrackDuration] = useState(null);
 
   // this effect loads BGM tracks asynchronously
   // then stores them in a bgm tracklist ref
@@ -110,6 +123,8 @@ export const AudioProvider = ({ children }) => {
         bgmBuffersRef.current = buffers;
         setBGMLoaded(true);
         setCurrentTrack(0);
+        setPlaybackPosition(0);
+        setTrackDuration(bgmBuffersRef.current[0].duration);
         bgmAudioRef.current.setBuffer(bgmBuffersRef.current[0]);
         bgmAudioRef.current.setVolume(0.5);
         bgmAudioRef.current.setLoop(true);
@@ -136,27 +151,72 @@ export const AudioProvider = ({ children }) => {
     }
   }, [bgmLoaded]);
 
+  const playFromPosition = useCallback(
+    (position) => {
+      if (!bgmLoaded) return;
+
+      bgmAudioRef.current.stop();
+      bgmAudioRef.current.offset = position;
+      setPlaybackPosition(position);
+      bgmAudioRef.current.play();
+    },
+    [bgmLoaded, bgmAudioRef.current]
+  );
+
   const nextTrack = useCallback(() => {
     if (!bgmLoaded) return;
 
     const nextTrackIndex = (currentTrack + 1) % bgmBuffersRef.current.length;
     setCurrentTrack(nextTrackIndex);
+    setPlaybackPosition(0);
+    setTrackDuration(bgmBuffersRef.current[nextTrackIndex].duration);
 
     bgmAudioRef.current.stop();
     bgmAudioRef.current.setBuffer(bgmBuffersRef.current[nextTrackIndex]);
+    bgmAudioRef.current.offset = 0;
     bgmAudioRef.current.play();
   }, [currentTrack, bgmLoaded]);
 
-  const changeVolume = useCallback((volume) => {
+  const changeVolume = useCallback(
+    (delta) => {
+      if (!bgmLoaded) return;
+
+      const currentVolume = bgmAudioRef.current.getVolume();
+      // constrain to [0, 1]
+      const newVolume = Math.min(Math.max(currentVolume + delta, 0), 1);
+      bgmAudioRef.current.setVolume(newVolume);
+    },
+    [bgmLoaded]
+  );
+
+  useEffect(() => {
     if (!bgmLoaded) return;
 
-    setBGMVolume(volume);
-    bgmAudioRef.current.setVolume(volume);
-  }, [bgmLoaded]);
+    const intervalId = setInterval(() => {
+      if (bgmAudioRef.current.isPlaying) {
+        let newPosition = playbackPosition + 1; // track duration is in seconds
+        if (newPosition >= trackDuration) newPosition = 0;
+        setPlaybackPosition(newPosition);
+      }
+    }, 1000); // interval is in milliseconds
+
+    return () => clearInterval(intervalId);
+  }, [bgmLoaded, currentTrack, playbackPosition]);
   // END BGM LOGIC
 
   return (
-    <AudioContext.Provider value={{ playContactSFX, playRollResultSFX, togglePlayback, nextTrack, changeVolume }}>
+    <AudioContext.Provider
+      value={{
+        playContactSFX,
+        playRollResultSFX,
+        togglePlayback,
+        nextTrack,
+        changeVolume,
+        playFromPosition,
+        playbackPosition,
+        trackDuration,
+      }}
+    >
       {children}
     </AudioContext.Provider>
   );
