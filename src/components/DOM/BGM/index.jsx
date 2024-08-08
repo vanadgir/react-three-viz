@@ -4,6 +4,7 @@ import styles from "./BGM.module.scss";
 
 const BGM = () => {
   const {
+    bgmLoaded,
     togglePlayback,
     nextTrack,
     changeVolume,
@@ -19,36 +20,38 @@ const BGM = () => {
   };
 
   return (
-    <div className={styles.bgmMenu}>
-      <span className={styles.bgmButtons}>
+    <>
+      {bgmLoaded && <div className={styles.bgmMenu}>
+        <span className={styles.bgmButtons}>
+          <input
+            type="image"
+            src="../../assets/playpause.png"
+            onClick={togglePlayback}
+          ></input>
+          <input
+            type="image"
+            src="../../assets/next.png"
+            onClick={nextTrack}
+          ></input>
+        </span>
         <input
-          type="image"
-          src="../../assets/playpause.png"
-          onClick={togglePlayback}
+          className={styles.trackProgress}
+          type="range"
+          min={0}
+          max={trackDuration}
+          step={0.1}
+          value={playbackPosition}
+          onChange={(e) => playFromPosition(parseFloat(e.target.value))}
         ></input>
-        <input
-          type="image"
-          src="../../assets/next.png"
-          onClick={nextTrack}
-        ></input>
-      </span>
-      <input
-        className={styles.trackProgress}
-        type="range"
-        min={0}
-        max={trackDuration}
-        step={0.1}
-        value={playbackPosition}
-        onChange={(e) => playFromPosition(parseFloat(e.target.value))}
-      ></input>
-      <span className={styles.trackDuration}>
-        {convertTime(playbackPosition)} / {convertTime(trackDuration)}
-      </span>
-      <span className={styles.volumeButtons}>
-        <button onClick={() => changeVolume(-0.05)}>-</button>
-        <button onClick={() => changeVolume(0.05)}>+</button>
-      </span>
-    </div>
+        <span className={styles.trackDuration}>
+          {convertTime(playbackPosition)} / {convertTime(trackDuration)}
+        </span>
+        <span className={styles.volumeButtons}>
+          <button onClick={() => changeVolume(-0.05)}>-</button>
+          <button onClick={() => changeVolume(0.05)}>+</button>
+        </span>
+      </div>}
+    </>
   );
 };
 

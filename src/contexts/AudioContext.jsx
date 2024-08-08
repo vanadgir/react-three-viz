@@ -105,9 +105,9 @@ export const AudioProvider = ({ children }) => {
   const bgmBuffersRef = useRef([]);
   const bgmAudioRef = useRef(new Audio(new AudioListener()));
   const [bgmLoaded, setBGMLoaded] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState(null);
+  const [currentTrack, setCurrentTrack] = useState(0);
   const [playbackPosition, setPlaybackPosition] = useState(0);
-  const [trackDuration, setTrackDuration] = useState(null);
+  const [trackDuration, setTrackDuration] = useState(0);
 
   // this effect loads BGM tracks asynchronously
   // then stores them in a bgm tracklist ref
@@ -115,6 +115,7 @@ export const AudioProvider = ({ children }) => {
     const tracks = [
       "../../assets/audio/bgm1.mp3",
       "../../assets/audio/bgm2.mp3",
+      "../../assets/audio/bgm3.mp3",
     ];
     const loader = new AudioLoader();
 
@@ -209,6 +210,7 @@ export const AudioProvider = ({ children }) => {
       value={{
         playContactSFX,
         playRollResultSFX,
+        bgmLoaded,
         togglePlayback,
         nextTrack,
         changeVolume,
