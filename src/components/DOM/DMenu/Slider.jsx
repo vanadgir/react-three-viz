@@ -1,16 +1,17 @@
 import styles from "./Slider.module.scss";
 
-const Slider = ({ className, label, max, update, value }) => {
+const Slider = ({ className, label, max, min, step, update, value }) => {
   return (
     <div className={`${styles.slider} ${className}`}>
       <p>{label}</p>
       <input
         className={className}
         type="range"
-        min="0.5"
-        step="0.1"
+        min={min ?? "0.5"}
+        step={step ?? "0.1"}
         max={max}
         onChange={(e) => update(parseFloat(e.target.value))}
+        onInput={(e) => update(parseFloat(e.target.value))}
         value={value}
       />
     </div>

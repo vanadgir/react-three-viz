@@ -31,6 +31,10 @@
     button.rerollButton {
       background-color: lightblue;
     }
+
+    button.menuButton.active {
+      background-color: lightblue;;
+    }
   }
 
   .diceMenuEntries {
@@ -58,44 +62,6 @@
 
       .menuButton.active {
         background-color: aquamarine;
-      }
-    }
-  }
-
-  .diceMenuEdit {
-    height: fit-content;
-    pointer-events: all;
-    width: fit-content;
-
-    p {
-      height: fit-content;
-      margin: auto;
-      padding: 0 8px;
-      text-align: left;
-      font-weight: 1000;
-    }
-
-    .diceTitle {
-      display: flex;
-    }
-
-    .slider {
-      display: flex;
-      height: 30px;
-      max-width: 98%;
-
-      input {
-        margin: 2px;
-      }
-    }
-
-    .colorWrapper {
-      height: 100px;
-      overflow: hidden;
-
-      p {
-        margin: 0 auto 0 0;
-        width: 50%;
       }
     }
   }

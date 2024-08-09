@@ -1,22 +1,21 @@
 import { useCallback, useState } from "react";
-import { CompactPicker } from "react-color";
 
 import { useDice } from "../../../contexts";
-import Slider from "./Slider";
+import Options from "./Options";
 
 import { validDice } from "../../../utils";
 import styles from "./DMenu.module.scss";
 
 const DMenu = () => {
-  const [selectedD, setSelectedD] = useState(null);
+  const [menuPopped, setMenuPopped] = useState(false);
   const [diceFormula, setDiceFormula] = useState("");
   const {
     clearBoard,
     createDice,
     diceAttributes,
+    diceOptions,
     rerollBoard,
     submitDiceFormula,
-    updateAttributes,
   } = useDice();
 
   const parseDiceFormula = useCallback(
@@ -46,6 +45,12 @@ const DMenu = () => {
         <button className={styles.clearButton} onClick={clearBoard}>
           Clear Board
         </button>
+        <button
+          className={`${styles.menuButton} ${menuPopped ? styles.active : ""}`}
+          onClick={() => setMenuPopped(!menuPopped)}
+        >
+          Options
+        </button>
       </form>
       <div className={styles.diceMenuEntries}>
         {validDice.map((diceName) => (
@@ -54,62 +59,20 @@ const DMenu = () => {
               className={styles.spawnButton}
               onClick={() => createDice([diceName])}
               style={{
-                backgroundColor: diceAttributes.colors[diceName],
-                color: diceAttributes.textColors[diceName],
+                backgroundColor: diceOptions.globalColor
+                  ? diceAttributes.colors["global"]
+                  : diceAttributes.colors[diceName],
+                color: diceOptions.globalColor
+                  ? diceAttributes.textColors["global"]
+                  : diceAttributes.textColors[diceName],
               }}
             >
               {diceName}
             </button>
-            <button
-              className={`${styles.menuButton} ${
-                diceName === selectedD && styles.active
-              }`}
-              onClick={() => {
-                if (selectedD !== diceName) {
-                  setSelectedD(diceName);
-                } else {
-                  setSelectedD(null);
-                }
-              }}
-            >
-              edit
-            </button>
           </div>
         ))}
       </div>
-      {selectedD && (
-        <div className={styles.diceMenuEdit}>
-          <div className={styles.diceTitle}>
-            <p>Dice</p>
-            <p>{selectedD}</p>
-          </div>
-          <Slider
-            className={styles.slider}
-            label="Size"
-            max={3}
-            update={(value) => {
-              updateAttributes("sizes", selectedD, value);
-            }}
-            value={diceAttributes?.sizes[selectedD]}
-          />
-          <div className={styles.colorWrapper}>
-            <p>Color</p>
-            <CompactPicker
-              onChangeComplete={(color) => {
-                updateAttributes("colors", selectedD, color.hex);
-              }}
-            />
-          </div>
-          <div className={styles.colorWrapper}>
-            <p>Text Color</p>
-            <CompactPicker
-              onChangeComplete={(color) => {
-                updateAttributes("textColors", selectedD, color.hex);
-              }}
-            />
-          </div>
-        </div>
-      )}
+      {menuPopped && <Options />}
     </div>
   );
 };

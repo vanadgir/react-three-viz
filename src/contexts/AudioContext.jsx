@@ -17,10 +17,12 @@ import dice from "../../assets/audio/dice.wav";
 
 const AudioContext = createContext({
   children: [],
+  globalVolume: 1,
   playContactSFX: (impactVelocity) => undefined,
   playRollResultSFX: (roll) => undefined,
   togglePlayback: () => undefined,
   nextTrack: () => undefined,
+  updateGlobalVolume: (value) => undefined,
 });
 
 const CONTACT_FACTOR = 20;
@@ -28,6 +30,7 @@ const CONTACT_THRESHOLD = 0.0075;
 const CONTACT_DETUNE_RANGE = 300;
 
 export const AudioProvider = ({ children }) => {
+  const [globalVolume, setGlobalVolume] = useState(1);
   const maxRollSFXBuffer = useLoader(AudioLoader, wahoo);
   const minRollSFXBuffer = useLoader(AudioLoader, nooo);
   const neutralRollSFXBuffer = useLoader(AudioLoader, neutral);
@@ -41,26 +44,36 @@ export const AudioProvider = ({ children }) => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(maxRollSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(0.6);
+        audio.setVolume(0.6 * globalVolume);
         return audio;
       })(),
       min: (() => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(minRollSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(0.6);
+        audio.setVolume(0.6 * globalVolume);
         return audio;
       })(),
       neutral: (() => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(neutralRollSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(0.2);
+        audio.setVolume(0.2 * globalVolume);
         return audio;
       })(),
     }),
-    [sfxListener, maxRollSFXBuffer, minRollSFXBuffer, neutralRollSFXBuffer]
+    [
+      globalVolume,
+      sfxListener,
+      maxRollSFXBuffer,
+      minRollSFXBuffer,
+      neutralRollSFXBuffer,
+    ]
   );
+
+  const updateGlobalVolume = useCallback((value) => {
+    setGlobalVolume(value);
+  }, []);
 
   const playRollResultSFX = useCallback(
     (roll) => {
@@ -80,7 +93,7 @@ export const AudioProvider = ({ children }) => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(contactSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(constrained);
+        audio.setVolume(constrained * globalVolume);
         audio.setDetune(
           (audio.getDetune() -
             CONTACT_DETUNE_RANGE / 2 +
@@ -201,15 +214,17 @@ export const AudioProvider = ({ children }) => {
   return (
     <AudioContext.Provider
       value={{
-        playContactSFX,
-        playRollResultSFX,
         bgmLoaded,
-        togglePlayback,
-        nextTrack,
+        globalVolume,
         changeVolume,
-        playFromPosition,
+        nextTrack,
         playbackPosition,
+        playContactSFX,
+        playFromPosition,
+        playRollResultSFX,
+        togglePlayback,
         trackDuration,
+        updateGlobalVolume,
       }}
     >
       {children}

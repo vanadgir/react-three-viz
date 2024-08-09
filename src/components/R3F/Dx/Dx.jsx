@@ -11,7 +11,6 @@ import {
   randomRotation,
   randomVelocity,
   randomSpawnPosition,
-  REROLL_INTERVAL,
   REST_INTERVAL,
   ZEROISH,
 } from "../../../utils";
@@ -28,9 +27,11 @@ const Dx = ({
   radius,
   color,
   textColor,
+  shouldReroll,
+  rerollTime,
 }) => {
   const { playContactSFX } = useAudio();
-  const { diceInPlay, onDieResolve, resetDie } = useDice();
+  const { diceInPlay, diceOptions, onDieResolve, resetDie } = useDice();
   const [collidingPlane, setCollidingPlane] = useState(false);
   const [lastContactId, setLastContactId] = useState(null);
   const [hovered, setHover] = useState(false);
@@ -143,29 +144,34 @@ const Dx = ({
   }, [api, inertiaMod, lowVelocity]);
 
   useEffect(() => {
-    // this effect checks if the die is low velocity and colliding the plane.
+    // this effect checks if the die is low velocity, 
+    // then if it's resting on an acceptable surface, as set by the user
     // if so, then it starts an restInterval/timer to see if that persists for half a second.
     // if so, sets atRest to true
-    if (lowVelocity && collidingPlane && !atRest) {
+    if (
+      lowVelocity &&
+      (!diceOptions.restOnTable || collidingPlane) &&
+      !atRest
+    ) {
       restInterval = setInterval(() => {
         setAtRest(true);
       }, REST_INTERVAL);
     }
     return () => clearInterval(restInterval);
-  }, [atRest, collidingPlane, lowVelocity]);
+  }, [atRest, collidingPlane, diceOptions, lowVelocity]);
 
   useEffect(() => {
     // this effect makes sure that any 'stuck' dice can still resolve, by rerolling
     // them after a timer
-    if (!atRest) {
+    if (!atRest && shouldReroll) {
       rerollInterval = setInterval(() => {
         setShouldReset(true);
-      }, REROLL_INTERVAL);
+      }, rerollTime * 1000);
     } else {
       clearInterval(rerollInterval);
     }
     return () => clearInterval(rerollInterval);
-  }, [atRest]);
+  }, [atRest, shouldReroll]);
 
   useEffect(() => {
     if (shouldReset) {
