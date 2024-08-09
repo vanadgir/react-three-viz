@@ -20,6 +20,9 @@
       padding: 4px;
       background-color: transparent; 
       border: 2px dashed black;
+      box-sizing: border-box;
+      height: 32px;
+      width: 32px;
     }
 
     input[type="image"]:hover {
