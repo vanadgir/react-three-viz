@@ -91,7 +91,7 @@ const Dx = ({
   useEffect(() => {
     // onRest needs to be an effect, so the most up-to-date state and context are available
     // the interval that triggers atRest captures a state from 500ms prior
-    if (atRest && !diceInPlay[id].resolved) {
+    if (atRest && diceInPlay[id] && !diceInPlay[id].resolved) {
       api.velocity.set(0, 0, 0);
 
       const result = CannonUtils.getResult(
