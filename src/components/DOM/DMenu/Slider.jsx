@@ -1,8 +1,8 @@
-import "./Slider.module.scss";
+import styles from "./Slider.module.scss";
 
 const Slider = ({ className, label, max, update, value }) => {
   return (
-    <div className={className}>
+    <div className={`${styles.slider} ${className}`}>
       <p>{label}</p>
       <input
         className={className}
