@@ -144,7 +144,7 @@ const Dx = ({
   }, [api, inertiaMod, lowVelocity]);
 
   useEffect(() => {
-    // this effect checks if the die is low velocity, 
+    // this effect checks if the die is low velocity,
     // then if it's resting on an acceptable surface, as set by the user
     // if so, then it starts an restInterval/timer to see if that persists for half a second.
     // if so, sets atRest to true

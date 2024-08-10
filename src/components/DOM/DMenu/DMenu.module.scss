@@ -15,25 +15,44 @@
       box-sizing: border-box;
       font-size: 36px;
       max-height: 100%;
-      width: 90%;
     }
 
     button {
       height: 100%;
       line-height: 14px;
-      width: 10%;
+      max-width: 10%;
+      width: 10vw;
+
+      &:hover {
+        background-color: $lightestGrey;
+      }
     }
 
     button.clearButton {
-      background-color: red;
+      background-color: $red;
+      color: black;
+
+      &:hover {
+        background-color: $lightRed;
+      }
     }
 
     button.rerollButton {
       background-color: lightblue;
+      color: black;
+
+      &:hover {
+        background-color: white;
+      }
     }
 
     button.menuButton.active {
-      background-color: lightblue;;
+      background-color: lightblue;
+      color: black;
+
+      &:hover {
+        background-color: white;
+      }
     }
   }
 
