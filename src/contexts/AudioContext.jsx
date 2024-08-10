@@ -10,6 +10,11 @@ import React, {
 import { useLoader } from "@react-three/fiber";
 import { AudioLoader, AudioListener, Audio } from "three";
 
+import wahoo from "../../assets/audio/wahoo.wav";
+import nooo from "../../assets/audio/nooo.wav";
+import neutral from "../../assets/audio/neutral.mp3";
+import dice from "../../assets/audio/dice.wav";
+
 const AudioContext = createContext({
   children: [],
   playContactSFX: (impactVelocity) => undefined,
@@ -23,24 +28,12 @@ const CONTACT_THRESHOLD = 0.0075;
 const CONTACT_DETUNE_RANGE = 300;
 
 export const AudioProvider = ({ children }) => {
-  // BEGIN SFX LOGIC
-  const maxRollSFXBuffer = useLoader(
-    AudioLoader,
-    `../../assets/audio/wahoo.wav`
-  );
-  const minRollSFXBuffer = useLoader(
-    AudioLoader,
-    `../../assets/audio/nooo.wav`
-  );
-  const neutralRollSFXBuffer = useLoader(
-    AudioLoader,
-    `../../assets/audio/neutral.mp3`
-  );
-  const contactSFXBuffer = useLoader(
-    AudioLoader,
-    "../../assets/audio/dice.wav"
-  );
-  const sfxListener = useMemo(() => new AudioListener(), []);
+  const maxRollSFXBuffer = useLoader(AudioLoader, wahoo);
+  const minRollSFXBuffer = useLoader(AudioLoader, nooo);
+  const neutralRollSFXBuffer = useLoader(AudioLoader, neutral);
+  const contactSFXBuffer = useLoader(AudioLoader, dice);
+
+  const listener = useMemo(() => new AudioListener(), []);
 
   const allRollResultSFX = useMemo(
     () => ({

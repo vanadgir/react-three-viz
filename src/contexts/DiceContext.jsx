@@ -10,7 +10,11 @@ import { Color } from "three";
 import { useAudio } from "./AudioContext";
 import { diceComponents } from "../components/R3F/Dx";
 
-import { defaultDiceAttributes, randomSpawnPosition } from "../utils";
+import {
+  defaultDiceAttributes,
+  randomSpawnPosition,
+  validDice,
+} from "../utils";
 
 // no implementation yet, more like an interface
 export const DiceContext = createContext({
@@ -51,39 +55,19 @@ export const DiceProvider = ({ children }) => {
         D20: 0,
       }
     );
-    return { total, resolved, netScore, individualCounts };
-  }, [diceInPlay]);
-
-  const onDieResolve = useCallback(
-    (id, result, resultFudge) => {
-      try {
-        setDiceInPlay({
-          ...diceInPlay,
-          [id]: { ...diceInPlay[id], resolved: true, resolveValue: result },
-        });
-        playRollResultSFX(resultFudge);
-      } catch (e) {
-        console.error(e);
-        return;
+    const formula = Object.keys(individualCounts).reduce((prev, cur) => {
+      let addString = "";
+      if (individualCounts[cur] !== 0) {
+        if (prev === "") {
+          addString = individualCounts[cur] + cur.toLocaleLowerCase();
+        } else {
+          addString = ` + ${individualCounts[cur]}${cur.toLocaleLowerCase()}`;
+        }
       }
-    },
-    [diceInPlay, playRollResultSFX]
-  );
-
-  const resetDie = useCallback(
-    (key) => {
-      setDiceInPlay({
-        ...diceInPlay,
-        [key]: { ...diceInPlay[key], resolved: false, resolveValue: 0 },
-      });
-    },
-    [diceInPlay]
-  );
-
-  const clearBoard = useCallback(() => {
-    setDiceInPlay({});
-    setCurrentIndex(0);
-  }, []);
+      return prev + addString;
+    }, "");
+    return { total, resolved, netScore, individualCounts, formula };
+  }, [diceInPlay]);
 
   const createDx = useCallback(
     (dName, key) => {
@@ -127,6 +111,64 @@ export const DiceProvider = ({ children }) => {
     [currentIndex, diceAttributes, diceInPlay, createDx]
   );
 
+  const onDieResolve = useCallback(
+    (id, result, resultFudge) => {
+      try {
+        setDiceInPlay({
+          ...diceInPlay,
+          [id]: { ...diceInPlay[id], resolved: true, resolveValue: result },
+        });
+        playRollResultSFX(resultFudge);
+      } catch (e) {
+        console.error(e);
+        return;
+      }
+    },
+    [diceInPlay, playRollResultSFX]
+  );
+
+  const submitDiceFormula = useCallback(
+    (diceFormula) => {
+      const splitFormula = [
+        ...diceFormula.matchAll(new RegExp(/(\d*)[d|D](\d{1,2})/gm)),
+      ]
+        .filter((group) => validDice.includes(`D${group[2]}`))
+        .reduce((prev, cur) => {
+          const toAdd = new Array(parseInt(cur[1]) || 1)
+            .fill(undefined)
+            .map((e) => {
+              return `D${cur[2]}`;
+            });
+          return [...prev, ...toAdd];
+        }, []);
+
+      if (splitFormula.length) {
+        createDice(splitFormula, true);
+      }
+    },
+    [createDice]
+  );
+
+  const rerollBoard = useCallback(() => {
+    clearBoard();
+    submitDiceFormula(diceCounts.formula);
+  }, [diceCounts.formula, submitDiceFormula]);
+
+  const resetDie = useCallback(
+    (key) => {
+      setDiceInPlay({
+        ...diceInPlay,
+        [key]: { ...diceInPlay[key], resolved: false, resolveValue: -1 },
+      });
+    },
+    [diceInPlay]
+  );
+
+  const clearBoard = useCallback(() => {
+    setDiceInPlay({});
+    setCurrentIndex(0);
+  }, []);
+
   const updateAttributes = useCallback(
     (attribute, key, value) => {
       setDiceAttributes({
@@ -147,7 +189,9 @@ export const DiceProvider = ({ children }) => {
           diceCounts,
           diceInPlay,
           onDieResolve,
+          rerollBoard,
           resetDie,
+          submitDiceFormula,
           updateAttributes,
         }}
       >

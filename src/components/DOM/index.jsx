@@ -2,12 +2,12 @@ import DMenu from "./DMenu";
 import BGM from "./BGM";
 import Results from "./Results";
 
-import "./DOM.scss";
+import styles from "./DOM.module.scss";
 
 const DOM = () => {
   return (
-    <div className="DOM">
-      <div className="UI noselect">
+    <div className={styles.DOM}>
+      <div className={`${styles.UI} ${styles.noselect}`}>
         <DMenu />
         <BGM />
         <Results />
