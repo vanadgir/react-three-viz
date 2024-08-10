@@ -13,7 +13,6 @@ import { diceComponents } from "../components/R3F/Dx";
 import {
   defaultDiceAttributes,
   defaultDiceOptions,
-  defaultGlobalOptions,
   randomSpawnPosition,
   validDice,
 } from "../utils";
@@ -32,7 +31,6 @@ export const DiceProvider = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [diceAttributes, setDiceAttributes] = useState(defaultDiceAttributes);
   const [diceOptions, setDiceOptions] = useState(defaultDiceOptions);
-  const [globalOptions, setGlobalOptions] = useState(defaultGlobalOptions);
   const [diceInPlay, setDiceInPlay] = useState({});
   const { playRollResultSFX } = useAudio();
 
@@ -207,7 +205,7 @@ export const DiceProvider = ({ children }) => {
         [option]: value,
       });
     },
-    [diceOptions, globalOptions]
+    [diceOptions]
   );
 
   return (
@@ -220,7 +218,6 @@ export const DiceProvider = ({ children }) => {
           diceCounts,
           diceInPlay,
           diceOptions,
-          globalOptions,
           onDieResolve,
           rerollBoard,
           resetDie,

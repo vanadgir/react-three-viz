@@ -14,15 +14,20 @@ import wahoo from "../../assets/audio/wahoo.wav";
 import nooo from "../../assets/audio/nooo.wav";
 import neutral from "../../assets/audio/neutral.mp3";
 import dice from "../../assets/audio/dice.wav";
+import bgm1 from "../../assets/audio/bgm1.mp3";
+import bgm2 from "../../assets/audio/bgm2.mp3";
+import bgm3 from "../../assets/audio/bgm3.mp3";
+
+import { defaultVolumes } from "../utils";
 
 const AudioContext = createContext({
   children: [],
-  globalVolume: 1,
+  volumes: defaultVolumes,
   playContactSFX: (impactVelocity) => undefined,
   playRollResultSFX: (roll) => undefined,
   togglePlayback: () => undefined,
   nextTrack: () => undefined,
-  updateGlobalVolume: (value) => undefined,
+  updateVolume: (key, value) => undefined,
 });
 
 const CONTACT_FACTOR = 20;
@@ -30,11 +35,11 @@ const CONTACT_THRESHOLD = 0.0075;
 const CONTACT_DETUNE_RANGE = 300;
 
 export const AudioProvider = ({ children }) => {
-  const [globalVolume, setGlobalVolume] = useState(1);
   const maxRollSFXBuffer = useLoader(AudioLoader, wahoo);
   const minRollSFXBuffer = useLoader(AudioLoader, nooo);
   const neutralRollSFXBuffer = useLoader(AudioLoader, neutral);
   const contactSFXBuffer = useLoader(AudioLoader, dice);
+  const volumes = useRef(defaultVolumes);
 
   const sfxListener = useMemo(() => new AudioListener(), []);
 
@@ -44,47 +49,58 @@ export const AudioProvider = ({ children }) => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(maxRollSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(0.6 * globalVolume);
+        audio.setVolume(0.6);
         return audio;
       })(),
       min: (() => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(minRollSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(0.6 * globalVolume);
+        audio.setVolume(0.6);
         return audio;
       })(),
       neutral: (() => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(neutralRollSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(0.2 * globalVolume);
+        audio.setVolume(0.2);
         return audio;
       })(),
     }),
-    [
-      globalVolume,
-      sfxListener,
-      maxRollSFXBuffer,
-      minRollSFXBuffer,
-      neutralRollSFXBuffer,
-    ]
+    [maxRollSFXBuffer, minRollSFXBuffer, neutralRollSFXBuffer, sfxListener]
   );
 
-  const updateGlobalVolume = useCallback((value) => {
-    setGlobalVolume(value);
-  }, []);
+  const updateVolume = useCallback(
+    (key, value) => {
+      if (value < 0) {
+        value = 0;
+      } else if (value > 1) {
+        value = 1;
+      }
+      volumes.current = { ...volumes.current, [key]: value };
+    },
+    [volumes]
+  );
 
   const playRollResultSFX = useCallback(
     (roll) => {
+      if (volumes.current.global === 0 || volumes.current.sfx === 0) {
+        return;
+      }
       const selectedAudio = allRollResultSFX[roll] || allRollResultSFX.neutral;
+      selectedAudio.setVolume(
+        selectedAudio.getVolume() * volumes.current.global * volumes.current.sfx
+      );
       selectedAudio.play();
     },
-    [allRollResultSFX]
+    [allRollResultSFX, volumes]
   );
 
   const playContactSFX = useCallback(
     (impactVelocity) => {
+      if (volumes.current.global === 0 || volumes.current.sfx === 0) {
+        return;
+      }
       const constrained = Math.min(
         Math.max(impactVelocity / CONTACT_FACTOR / 2, 0),
         1
@@ -93,7 +109,9 @@ export const AudioProvider = ({ children }) => {
         const audio = new Audio(sfxListener);
         audio.setBuffer(contactSFXBuffer);
         audio.setLoop(false);
-        audio.setVolume(constrained * globalVolume);
+        audio.setVolume(
+          constrained * volumes.current.global * volumes.current.sfx
+        );
         audio.setDetune(
           (audio.getDetune() -
             CONTACT_DETUNE_RANGE / 2 +
@@ -103,14 +121,14 @@ export const AudioProvider = ({ children }) => {
         audio.play();
       }
     },
-    [contactSFXBuffer, sfxListener]
+    [contactSFXBuffer, sfxListener, volumes]
   );
-  // END SFX LOGIC
 
   // BEGIN BGM LOGIC
   const bgmBuffersRef = useRef([]);
   const bgmAudioRef = useRef(new Audio(new AudioListener()));
   const [bgmLoaded, setBGMLoaded] = useState(false);
+  const [bgmPlaying, setBgmPlaying] = useState(false);
   const [currentTrack, setCurrentTrack] = useState(0);
   const [playbackPosition, setPlaybackPosition] = useState(0);
   const [trackDuration, setTrackDuration] = useState(0);
@@ -118,11 +136,7 @@ export const AudioProvider = ({ children }) => {
   // this effect loads BGM tracks asynchronously
   // then stores them in a bgm tracklist ref
   useEffect(() => {
-    const tracks = [
-      "../../assets/audio/bgm1.mp3",
-      "../../assets/audio/bgm2.mp3",
-      "../../assets/audio/bgm3.mp3",
-    ];
+    const tracks = [bgm1, bgm2, bgm3];
     const loader = new AudioLoader();
 
     Promise.all(tracks.map((path) => loader.loadAsync(path)))
@@ -136,6 +150,7 @@ export const AudioProvider = ({ children }) => {
         bgmAudioRef.current.setVolume(0.5);
         bgmAudioRef.current.setLoop(true);
         bgmAudioRef.current.play();
+        setBgmPlaying(true);
         console.log("BGM loaded and playing");
       })
       .catch((err) => {
@@ -153,8 +168,10 @@ export const AudioProvider = ({ children }) => {
 
     if (bgmAudioRef.current.isPlaying) {
       bgmAudioRef.current.pause();
+      setBgmPlaying(false);
     } else {
       bgmAudioRef.current.play();
+      setBgmPlaying(true);
     }
   }, [bgmLoaded]);
 
@@ -165,6 +182,7 @@ export const AudioProvider = ({ children }) => {
       bgmAudioRef.current.stop();
       bgmAudioRef.current.offset = position;
       setPlaybackPosition(position);
+      setBgmPlaying(true);
       bgmAudioRef.current.play();
     },
     [bgmLoaded, bgmAudioRef.current]
@@ -184,18 +202,6 @@ export const AudioProvider = ({ children }) => {
     bgmAudioRef.current.play();
   }, [currentTrack, bgmLoaded]);
 
-  const changeVolume = useCallback(
-    (delta) => {
-      if (!bgmLoaded) return;
-
-      const currentVolume = bgmAudioRef.current.getVolume();
-      // constrain to [0, 1]
-      const newVolume = Math.min(Math.max(currentVolume + delta, 0), 1);
-      bgmAudioRef.current.setVolume(newVolume);
-    },
-    [bgmLoaded]
-  );
-
   useEffect(() => {
     if (!bgmLoaded) return;
 
@@ -211,20 +217,24 @@ export const AudioProvider = ({ children }) => {
   }, [bgmLoaded, currentTrack, playbackPosition]);
   // END BGM LOGIC
 
+  if (bgmAudioRef.current?.setVolume) {
+    bgmAudioRef.current.setVolume(volumes.current.global * volumes.current.bgm);
+  }
+
   return (
     <AudioContext.Provider
       value={{
         bgmLoaded,
-        globalVolume,
-        changeVolume,
-        nextTrack,
+        bgmPlaying,
         playbackPosition,
+        trackDuration,
+        volumes,
+        nextTrack,
         playContactSFX,
         playFromPosition,
         playRollResultSFX,
         togglePlayback,
-        trackDuration,
-        updateGlobalVolume,
+        updateVolume,
       }}
     >
       {children}

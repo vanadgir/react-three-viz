@@ -8,7 +8,7 @@ import styles from "./Options.module.scss";
 import { validDice } from "../../../utils";
 
 const Options = ({}) => {
-  const { globalVolume, updateGlobalVolume } = useAudio();
+  const { volumes, updateVolume } = useAudio();
   const { diceAttributes, diceOptions, updateAttributes, updateOptions } =
     useDice();
   const [selectedForColor, setSelectedForColor] = useState("D4");
@@ -17,13 +17,31 @@ const Options = ({}) => {
 
   return (
     <div className={styles.options}>
+      <div className={styles.optionsColumn}>
         <Slider
           className={styles.slider}
-        label="Volume"
-        max={2}
+          label="Global Volume"
+          max={1}
           min={0}
-        update={updateGlobalVolume}
-        value={globalVolume}
+          update={(value) => updateVolume("global", value)}
+          value={volumes.global}
+        />
+        <Slider
+          className={styles.slider}
+          label="SFX Volume"
+          max={1}
+          min={0}
+          update={(value) => updateVolume("sfx", value)}
+          value={volumes.sfx}
+        />
+        <Slider
+          className={styles.slider}
+          label="Music Volume"
+          max={1}
+          min={0}
+          step={0.05}
+          update={(value) => updateVolume("bgm", value)}
+          value={volumes.bgm}
         />
         <div className={styles.optionWrapper}>
           <p>Resolve Only on Table</p>

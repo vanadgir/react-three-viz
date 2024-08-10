@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 
 import { useDice } from "../../../contexts";
+import BGM from "../BGM";
 import Options from "./Options";
 
 import { validDice } from "../../../utils";
@@ -72,6 +73,7 @@ const DMenu = () => {
           </div>
         ))}
       </div>
+      <BGM />
       {menuPopped && <Options />}
     </div>
   );
