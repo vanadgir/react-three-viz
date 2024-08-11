@@ -15,6 +15,13 @@ html {
   padding: 0;
 }
 
+a {
+  color: lightblue;
+  &:hover {
+    color: $lightGrey;
+  }
+}
+
 .app {
   height: 100vh;
   position: relative;

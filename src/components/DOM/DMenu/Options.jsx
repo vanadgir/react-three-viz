@@ -6,6 +6,7 @@ import { useAudio, useDice } from "../../../contexts";
 
 import styles from "./Options.module.scss";
 import { validDice } from "../../../utils";
+import Credits from "./Credits";
 
 const Options = ({}) => {
   const { volumes, updateVolume } = useAudio();
@@ -197,6 +198,7 @@ const Options = ({}) => {
             }}
           />
         </div>
+        <Credits />
       </div>
     </div>
   );
