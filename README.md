@@ -1,6 +1,6 @@
 <div align="center">
 <h1>three20</h1>
-<a href="https://dice.br-ndt.dev/">
+<a href="https://dice.br-ndt.dev/" target="_blank">
 <img src="./assets/logo.png" width="128" height="128" title="dice.br-ndt.dev"/>
 </a>
 
