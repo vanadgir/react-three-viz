@@ -7,9 +7,13 @@
 Tabletop dice-rolling simulation
 
 Made with:
+
 [Vite](https://vitejs.dev/)
+
 [React-three-fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
+
 [use-cannon](https://github.com/pmndrs/use-cannon)
+
 [cannon.js](https://schteppe.github.io/cannon.js/)
 
 Try live: [three20](https://dice.br-ndt.dev/)
