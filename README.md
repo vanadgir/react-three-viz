@@ -6,18 +6,18 @@ Tabletop dice-rolling simulation
 
 Made with:
 
-<a href="https://vitejs.dev" target="_blank" rel="noreferrer">Vite</a>
+<a href="https://vitejs.dev">Vite</a>
 
-<a href="https://docs.pmnd.rs/react-three-fiber/getting-started/introduction" target="_blank" rel="noreferrer">React-three-fiber</a>
+<a href="https://docs.pmnd.rs/react-three-fiber/getting-started/introduction">React-three-fiber</a>
 
-<a href="https://github.com/pmndrs/use-cannon" target="_blank" rel="noreferrer">use-cannon</a>
+<a href="https://github.com/pmndrs/use-cannon">use-cannon</a>
 
-<a href="https://schteppe.github.io/cannon.js/" target="_blank" rel="noreferrer">cannon.js</a>
+<a href="https://schteppe.github.io/cannon.js/">cannon.js</a>
 
-Try live: <a href="https://dice.br-ndt.dev/" target="_blank" rel="noreferrer">three20</a>
+Try live: <a href="https://dice.br-ndt.dev/">three20</a>
 
 Or run locally: `npm i && npm run dev `
 
-If you are interested in contributing, send a message to either <a href="https://github.com/br-ndt" target="_blank" rel="noreferrer">Tyler</a> or <a href="https://github.com/vanadgir" target="_blank" rel="noreferrer">Varun</a>.
+If you are interested in contributing, send a message to either <a href="https://github.com/br-ndt">Tyler</a> or <a href="https://github.com/vanadgir">Varun</a>.
 
 </div>
