@@ -51,6 +51,7 @@ export const defaultDiceAttributes = {
     D10: "red",
     D12: "blue",
     D20: "purple",
+    global: "white",
   },
   sizes: {
     D4: D4_CONST.RADIUS,
@@ -59,6 +60,7 @@ export const defaultDiceAttributes = {
     D10: D10_CONST.RADIUS,
     D12: D12_CONST.RADIUS,
     D20: D20_CONST.RADIUS,
+    global: 1,
   },
   textColors: {
     D4: "white",
@@ -67,5 +69,20 @@ export const defaultDiceAttributes = {
     D10: "white",
     D12: "white",
     D20: "white",
+    global: "black",
   },
+};
+
+export const defaultDiceOptions = {
+  globalColor: true,
+  globalSize: true,
+  resetStuck: false,
+  restOnTable: false,
+  stuckTimer: 2.0,
+};
+
+export const defaultVolumes = {
+  bgm: 1,
+  global: 1,
+  sfx: 1,
 };

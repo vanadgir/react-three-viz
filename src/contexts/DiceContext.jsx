@@ -12,6 +12,7 @@ import { diceComponents } from "../components/R3F/Dx";
 
 import {
   defaultDiceAttributes,
+  defaultDiceOptions,
   randomSpawnPosition,
   validDice,
 } from "../utils";
@@ -20,6 +21,7 @@ import {
 export const DiceContext = createContext({
   diceAttributes: defaultDiceAttributes,
   diceInPlay: [],
+  diceOptions: defaultDiceOptions,
   clearDice: () => undefined,
   createDice: (listToCreate) => undefined,
   updateAttributes: (attribute, key, value) => undefined,
@@ -28,6 +30,7 @@ export const DiceContext = createContext({
 export const DiceProvider = ({ children }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [diceAttributes, setDiceAttributes] = useState(defaultDiceAttributes);
+  const [diceOptions, setDiceOptions] = useState(defaultDiceOptions);
   const [diceInPlay, setDiceInPlay] = useState({});
   const { playRollResultSFX } = useAudio();
 
@@ -79,9 +82,25 @@ export const DiceProvider = ({ children }) => {
             id={key}
             position={randomSpawnPosition()}
             key={key}
-            radius={diceAttributes.sizes[dName]}
-            color={new Color(diceAttributes.colors[dName])}
-            textColor={diceAttributes.textColors[dName]}
+            shouldReroll={diceOptions.resetStuck}
+            rerollTime={diceOptions.stuckTimer}
+            radius={
+              diceOptions.globalSize
+                ? diceAttributes.sizes["global"]
+                : diceAttributes.sizes[dName]
+            }
+            color={
+              new Color(
+                diceOptions.globalColor
+                  ? diceAttributes.colors["global"]
+                  : diceAttributes.colors[dName]
+              )
+            }
+            textColor={
+              diceOptions.globalColor
+                ? diceAttributes.textColors["global"]
+                : diceAttributes.textColors[dName]
+            }
           />
         ),
         name: dName,
@@ -89,7 +108,7 @@ export const DiceProvider = ({ children }) => {
         resolveValue: 0,
       };
     },
-    [diceAttributes]
+    [diceAttributes, diceOptions]
   );
 
   const createDice = useCallback(
@@ -179,6 +198,16 @@ export const DiceProvider = ({ children }) => {
     [diceAttributes]
   );
 
+  const updateOptions = useCallback(
+    (option, value) => {
+      setDiceOptions({
+        ...diceOptions,
+        [option]: value,
+      });
+    },
+    [diceOptions]
+  );
+
   return (
     <>
       <DiceContext.Provider
@@ -188,11 +217,13 @@ export const DiceProvider = ({ children }) => {
           diceAttributes,
           diceCounts,
           diceInPlay,
+          diceOptions,
           onDieResolve,
           rerollBoard,
           resetDie,
           submitDiceFormula,
           updateAttributes,
+          updateOptions,
         }}
       >
         {children}

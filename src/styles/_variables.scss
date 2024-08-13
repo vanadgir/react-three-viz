@@ -1,0 +1,13 @@
+$gold: rgb(226, 189, 96);
+
+$grey: #313338;
+$lightGrey: rgba(255, 255, 255, 0.3);
+$lightestGrey: rgba(255, 255, 255, 0.6);
+
+$red: #cf2424;
+$lightRed: #d65252;
+
+@font-face {
+  font-family: "TypeMachine";
+  src: local("TypeMachine"), url(@/TypeMachine.ttf) format("truetype");
+}

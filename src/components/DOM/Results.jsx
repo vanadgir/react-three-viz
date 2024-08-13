@@ -10,11 +10,18 @@ const Results = () => {
         Dice in Play: {diceCounts.total} ({diceCounts.resolved} /{" "}
         {diceCounts.total} resolved)
       </p>
-      <p>Formula: {diceCounts.formula}</p>
-      <p>
-        Result: {diceCounts.netScore}
-        {diceCounts.total === diceCounts.resolved && " (Final)"}
-      </p>
+      {diceCounts.formula !== "" && (
+        <p>
+          Formula: {diceCounts.formula} ={" "}
+          <span
+            className={
+              diceCounts.total === diceCounts.resolved ? styles.final : ""
+            }
+          >
+            {diceCounts.netScore}
+          </span>
+        </p>
+      )}
     </div>
   );
 };

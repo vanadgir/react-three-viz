@@ -9,7 +9,6 @@ const DOM = () => {
     <div className={styles.DOM}>
       <div className={`${styles.UI} ${styles.noselect}`}>
         <DMenu />
-        <BGM />
         <Results />
       </div>
     </div>

@@ -1,6 +1,8 @@
 import CannonUtils from "./CannonUtils";
 import {
   defaultDiceAttributes,
+  defaultDiceOptions,
+  defaultVolumes,
   D4_CONST,
   D6_CONST,
   D8_CONST,
@@ -23,6 +25,8 @@ import {
 export {
   CannonUtils,
   defaultDiceAttributes,
+  defaultDiceOptions,
+  defaultVolumes,
   D4_CONST,
   D6_CONST,
   D8_CONST,

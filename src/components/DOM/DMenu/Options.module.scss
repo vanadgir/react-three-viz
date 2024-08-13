@@ -1,0 +1,95 @@
+.options {
+  display: flex;
+  height: fit-content;
+  pointer-events: all;
+  width: 600px;
+
+  p {
+    height: fit-content;
+    margin: auto;
+    padding: 0 8px;
+    text-align: left;
+  }
+
+  .optionsColumn {
+    border: 1px solid black;
+    min-height: 264px;
+    max-width: 50vw;
+    width: 300px;
+
+    .optionWrapper {
+      display: flex;
+
+      input[type="checkbox"] {
+        accent-color: #313338;
+        margin: 8px;
+        width: fit-content;
+      }
+
+      input[type="number"] {
+        background-color: white;
+        border: 1px solid lighten($grey, 50%);
+        border-radius: 2px;
+        font-weight: 1000;
+        margin: 0 8px;
+        text-align: center;
+        width: 30px;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+      }
+    }
+
+    .slider {
+      display: flex;
+      height: 30px;
+      max-width: 98%;
+
+      input {
+        margin: 2px;
+      }
+    }
+
+    .colorWrapper {
+      height: 100px;
+      overflow: hidden;
+
+      .colorTitle {
+        display: flex;
+        height: fit-content;
+        padding: 4px;
+
+        p {
+          margin: 0 auto 0 0;
+          width: 50%;
+        }
+      }
+    }
+
+    .sizeButtons {
+      display: flex;
+      justify-content: center;
+    }
+
+    .dButton {
+      box-sizing: content-box;
+      width: 36px;
+
+      &.active {
+        background-color: lightblue;
+        color: black;
+
+        &:hover {
+          background-color: white;
+        }
+      }
+
+      &:hover {
+        background-color: #4e5053;
+      }
+    }
+  }
+}

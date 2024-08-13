@@ -23,14 +23,22 @@
       height: 32px;
       padding: 4px;
       width: 32px;
-    }
 
-    input[type="image"]:hover {
-      background-color: rgba(255, 255, 255, 0.3);
-    }
+      &:hover {
+        background-color: $lightGrey;
+      }
 
-    input[type="image"]:active {
-      background-color: rgba(255, 255, 255, 0.6);
+      &:active {
+        background-color: $lightestGrey;
+      }
+      
+      &.paused {
+        background-color: lightblue;
+
+        &:hover {
+          background-color: white;
+        }
+      }
     }
   }
 
@@ -42,5 +50,62 @@
   .volumeButtons {
     display: flex;
     max-width: 100px;
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    margin: 0 4px;
+
+    &::-webkit-slider- {
+      &thumb {
+        -webkit-appearance: none; /* Override default look */
+        appearance: none;
+        background-color: lightblue;
+        border: 1px solid black;
+        margin-top: -6px;
+        height: 20px;
+        width: 8px;
+
+        &:hover {
+          background-color: white;
+          height: 22px;
+          margin-left: -1px;
+          margin-top: -7px;
+          width: 10px;
+        }
+      }
+
+      &runnable-track {
+        background: $grey;
+        height: 8px;
+      }
+    }
+
+    /** FF*/
+    &::-moz-range- {
+      &thumb {
+        background-color: lightblue;
+        border-radius: 0; /*Removes default border-radius that FF applies*/
+        border: 1px solid black;
+        margin-top: -6px;
+        height: 20px;
+        width: 8px;
+
+        &:hover {
+          background-color: white;
+          height: 22px;
+          margin-left: -1px;
+          margin-top: -7px;
+          width: 10px;
+        }
+      }
+      &track {
+        background: $grey;
+        height: 8px;
+      }
+    }
   }
 }
