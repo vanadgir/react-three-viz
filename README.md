@@ -19,6 +19,7 @@ Try live: <a href="https://dice.br-ndt.dev/" target="_blank" rel="noreferrer">th
 
 Or run locally: `npm i && npm run dev `
 
-If you are interested in contributing, send a message to either <a href="https://github.com/br-ndt" target="_blank" rel="author">Tyler</a> or <a href="https://github.com/vanadgir" target="_blank" rel="author">Varun</a>.
+If you are interested in contributing, 
+send a message to either <a href="https://github.com/br-ndt" target="_blank" rel="author">Tyler</a> or <a href="https://github.com/vanadgir" target="_blank" rel="author">Varun</a>.
 
 </div>
